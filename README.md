@@ -19,7 +19,7 @@ indefensible results.
 | File | Contents |
 |---|---|
 | `NBA_Data_Project.sql` | Schema-only export of the PostgreSQL database — every table and view definition (no data) |
-| `NBA_Analytics_Dashboards.pbix` | All seven Power BI dashboards |
+| `NBA_DATA_PROJECT_DASHBOARDS.pbix` | All seven Power BI dashboards |
 | `NBA_Data_Project_Methodology-Report.Rmd` / `NBA_Data_Project_Methodology-Report.pdf` | The full methodology and decision report |
 | `nba_analytics_deck.pptx` / `nba_analytics_deck.pdf` | A short stage-by-stage walkthrough deck |
 | `Final_Award_Set.docx` / `.pdf` | The final award list, award teams, and cut-award reasoning |
@@ -50,7 +50,7 @@ itself — is documented in full in
 
 For the full reasoning behind the methodology, the data-quality issues found and fixed along the
 way, and the validation checks that confirm the calculated outputs match real basketball
-reality, see [`methodology.pdf`](./methodology.pdf).
+reality, see [`NBA_Data_Project_Methodology-Report.pdf`](./NBA_Data_Project_Methodology-Report.pdf).
 
 ---
 
@@ -106,9 +106,9 @@ License Note* below). To reproduce the project end to end:
    recreate every table and view (empty).
 2. **Data** — source your own copy of Basketball Reference player and team stats for the
    2019-20 through 2024-25 seasons, clean and stage it to match the schema, and import it.
-3. **Power BI** — open `NBA_Analytics_Dashboards.pbix` in Power BI Desktop and point
+3. **Power BI** — open `NBA_DATA_PROJECT_DASHBOARDS.pbix` in Power BI Desktop and point
    the data source at your own PostgreSQL instance.
-4. **Methodology report** — open `methodology.Rmd` in RStudio. It expects a `data/` folder of
+4. **Methodology report** — open `NBA_Data_Project_Methodology-Report.Rmd` in RStudio. It expects a `data/` folder of
    CSV exports from the award and composite-score views (see the R Markdown file's own code
    chunks for exact filenames), then knits to PDF with `rmarkdown`/`knitr` (requires `tinytex`
    for the LaTeX toolchain).
