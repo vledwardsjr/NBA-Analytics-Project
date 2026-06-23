@@ -20,7 +20,7 @@ indefensible results.
 |---|---|
 | `schema.sql` | Schema-only export of the PostgreSQL database — every table and view definition (no data) |
 | `NBA_Analytics_Dashboards.pbix` | All seven Power BI dashboards |
-| `methodology.Rmd` / `methodology.pdf` | The full methodology and decision report |
+| `NBA_Data_Project_Methodology-Report.Rmd` / `NBA_Data_Project_Methodology-Report.pdf` | The full methodology and decision report |
 | `nba_analytics_deck.pptx` / `nba_analytics_deck.pdf` | A short stage-by-stage walkthrough deck |
 | `Final_Award_Set.docx` / `.pdf` | The final award list, award teams, and cut-award reasoning |
 | `Formula_Reference_Final.docx` / `.pdf` | Every formula used in the project, in full |
@@ -136,5 +136,5 @@ are released under the MIT License unless noted otherwise.
 
 ## Author
 
-Built by VJ as a data analytics portfolio project — database design, SQL engineering,
+Built by Vaughn Edwards Jr as a data analytics portfolio project — database design, SQL engineering,
 statistical methodology, and BI dashboard development, end to end.
