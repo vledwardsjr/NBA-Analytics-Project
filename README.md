@@ -18,7 +18,7 @@ indefensible results.
 
 | File | Contents |
 |---|---|
-| `schema.sql` | Schema-only export of the PostgreSQL database — every table and view definition (no data) |
+| `NBA_Data_Project.sql` | Schema-only export of the PostgreSQL database — every table and view definition (no data) |
 | `NBA_Analytics_Dashboards.pbix` | All seven Power BI dashboards |
 | `NBA_Data_Project_Methodology-Report.Rmd` / `NBA_Data_Project_Methodology-Report.pdf` | The full methodology and decision report |
 | `nba_analytics_deck.pptx` / `nba_analytics_deck.pdf` | A short stage-by-stage walkthrough deck |
@@ -102,7 +102,7 @@ progression views.
 This repo includes the **schema only** — no data is redistributed here (see *Data Source &
 License Note* below). To reproduce the project end to end:
 
-1. **Database** — install PostgreSQL 18 and run `schema.sql` against a new database to
+1. **Database** — install PostgreSQL 18 and run `NBA_Data_Project.sql` against a new database to
    recreate every table and view (empty).
 2. **Data** — source your own copy of Basketball Reference player and team stats for the
    2019-20 through 2024-25 seasons, clean and stage it to match the schema, and import it.
@@ -117,7 +117,7 @@ License Note* below). To reproduce the project end to end:
 
 Right-click the `nba_project` database → **Backup...** → set Format to **Plain**, and look for
 a schema-only option (labeled **Only schema**, or under a **Dump Options** tab, depending on
-your pgAdmin version) → run the backup → the output file is your `schema.sql`.
+your pgAdmin version) → run the backup → the output file is your `NBA_Data_Project.sql`.
 
 ---
 
