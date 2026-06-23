@@ -113,7 +113,7 @@ License Note* below). To reproduce the project end to end:
    chunks for exact filenames), then knits to PDF with `rmarkdown`/`knitr` (requires `tinytex`
    for the LaTeX toolchain).
 
-### Exporting `schema.sql` yourself (pgAdmin)
+### Exporting `NBA_Data_Project.sql` yourself (pgAdmin)
 
 Right-click the `nba_project` database → **Backup...** → set Format to **Plain**, and look for
 a schema-only option (labeled **Only schema**, or under a **Dump Options** tab, depending on
