@@ -1,0 +1,2160 @@
+--
+-- PostgreSQL database dump
+--
+
+\restrict 23h1ittbEWqLbKu3pBwSBHrAWDclmCPvoG1QIMT3blnBp8y8JYyEo9jpdaJoZpa
+
+-- Dumped from database version 18.3
+-- Dumped by pg_dump version 18.3
+
+-- Started on 2026-06-23 17:36:59 EDT
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 6 (class 2615 OID 17209)
+-- Name: nba; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+CREATE SCHEMA nba;
+
+
+ALTER SCHEMA nba OWNER TO postgres;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 220 (class 1259 OID 17210)
+-- Name: dim_players; Type: TABLE; Schema: nba; Owner: postgres
+--
+
+CREATE TABLE nba.dim_players (
+    player_id character varying(15) NOT NULL,
+    player_name character varying(100) NOT NULL
+);
+
+
+ALTER TABLE nba.dim_players OWNER TO postgres;
+
+--
+-- TOC entry 221 (class 1259 OID 17215)
+-- Name: dim_positions; Type: TABLE; Schema: nba; Owner: postgres
+--
+
+CREATE TABLE nba.dim_positions (
+    position_id integer NOT NULL,
+    "position" character varying(2) NOT NULL
+);
+
+
+ALTER TABLE nba.dim_positions OWNER TO postgres;
+
+--
+-- TOC entry 222 (class 1259 OID 17220)
+-- Name: dim_positions_position_id_seq; Type: SEQUENCE; Schema: nba; Owner: postgres
+--
+
+CREATE SEQUENCE nba.dim_positions_position_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE nba.dim_positions_position_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 4077 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: dim_positions_position_id_seq; Type: SEQUENCE OWNED BY; Schema: nba; Owner: postgres
+--
+
+ALTER SEQUENCE nba.dim_positions_position_id_seq OWNED BY nba.dim_positions.position_id;
+
+
+--
+-- TOC entry 223 (class 1259 OID 17221)
+-- Name: dim_seasons; Type: TABLE; Schema: nba; Owner: postgres
+--
+
+CREATE TABLE nba.dim_seasons (
+    season_id integer NOT NULL,
+    season character varying(20) NOT NULL,
+    season_year smallint NOT NULL
+);
+
+
+ALTER TABLE nba.dim_seasons OWNER TO postgres;
+
+--
+-- TOC entry 224 (class 1259 OID 17227)
+-- Name: dim_seasons_season_id_seq; Type: SEQUENCE; Schema: nba; Owner: postgres
+--
+
+CREATE SEQUENCE nba.dim_seasons_season_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE nba.dim_seasons_season_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 4078 (class 0 OID 0)
+-- Dependencies: 224
+-- Name: dim_seasons_season_id_seq; Type: SEQUENCE OWNED BY; Schema: nba; Owner: postgres
+--
+
+ALTER SEQUENCE nba.dim_seasons_season_id_seq OWNED BY nba.dim_seasons.season_id;
+
+
+--
+-- TOC entry 225 (class 1259 OID 17228)
+-- Name: dim_teams; Type: TABLE; Schema: nba; Owner: postgres
+--
+
+CREATE TABLE nba.dim_teams (
+    team_id integer NOT NULL,
+    team_name character varying(100) NOT NULL,
+    team_abbreviation character(3) NOT NULL
+);
+
+
+ALTER TABLE nba.dim_teams OWNER TO postgres;
+
+--
+-- TOC entry 226 (class 1259 OID 17234)
+-- Name: dim_teams_team_id_seq; Type: SEQUENCE; Schema: nba; Owner: postgres
+--
+
+CREATE SEQUENCE nba.dim_teams_team_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE nba.dim_teams_team_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 4079 (class 0 OID 0)
+-- Dependencies: 226
+-- Name: dim_teams_team_id_seq; Type: SEQUENCE OWNED BY; Schema: nba; Owner: postgres
+--
+
+ALTER SEQUENCE nba.dim_teams_team_id_seq OWNED BY nba.dim_teams.team_id;
+
+
+--
+-- TOC entry 227 (class 1259 OID 17235)
+-- Name: fact_player_season_advanced; Type: TABLE; Schema: nba; Owner: postgres
+--
+
+CREATE TABLE nba.fact_player_season_advanced (
+    player_id character varying(15) NOT NULL,
+    season_id integer NOT NULL,
+    team_id integer NOT NULL,
+    player_efficiency_rating numeric(5,1),
+    true_shooting_percentage numeric(5,3),
+    three_point_attempt_rate numeric(5,3),
+    free_throw_attempt_rate numeric(5,3),
+    offensive_rebound_percentage numeric(5,1),
+    defensive_rebound_percentage numeric(5,1),
+    total_rebound_percentage numeric(5,1),
+    assist_percentage numeric(5,1),
+    steal_percentage numeric(5,1),
+    block_percentage numeric(5,1),
+    turnover_percentage numeric(5,1),
+    usage_rate numeric(5,1),
+    offensive_win_shares numeric(5,1),
+    defensive_win_shares numeric(5,1),
+    win_shares numeric(5,1),
+    win_shares_per48 numeric(5,3),
+    offensive_box_plus_minus numeric(5,1),
+    defensive_box_plus_minus numeric(5,1),
+    box_plus_minus numeric(5,1),
+    value_over_replacement_player numeric(5,1)
+);
+
+
+ALTER TABLE nba.fact_player_season_advanced OWNER TO postgres;
+
+--
+-- TOC entry 228 (class 1259 OID 17241)
+-- Name: fact_player_season_per100; Type: TABLE; Schema: nba; Owner: postgres
+--
+
+CREATE TABLE nba.fact_player_season_per100 (
+    player_id character varying(15) NOT NULL,
+    season_id integer NOT NULL,
+    team_id integer NOT NULL,
+    field_goals numeric(4,1),
+    field_goal_attempts numeric(4,1),
+    three_pointers numeric(4,1),
+    three_point_attempts numeric(4,1),
+    two_pointers numeric(4,1),
+    two_point_attempts numeric(4,1),
+    free_throws numeric(4,1),
+    free_throw_attempts numeric(4,1),
+    offensive_rebounds numeric(4,1),
+    defensive_rebounds numeric(4,1),
+    total_rebounds numeric(4,1),
+    assists numeric(4,1),
+    steals numeric(4,1),
+    blocks numeric(4,1),
+    turnovers numeric(4,1),
+    personal_fouls numeric(4,1),
+    points numeric(4,1),
+    offensive_rating integer,
+    defensive_rating integer
+);
+
+
+ALTER TABLE nba.fact_player_season_per100 OWNER TO postgres;
+
+--
+-- TOC entry 229 (class 1259 OID 17247)
+-- Name: fact_player_season_pergame; Type: TABLE; Schema: nba; Owner: postgres
+--
+
+CREATE TABLE nba.fact_player_season_pergame (
+    player_id character varying(15) NOT NULL,
+    season_id integer NOT NULL,
+    team_id integer NOT NULL,
+    total_rebounds numeric(4,1),
+    assists numeric(4,1),
+    points numeric(4,1)
+);
+
+
+ALTER TABLE nba.fact_player_season_pergame OWNER TO postgres;
+
+--
+-- TOC entry 230 (class 1259 OID 17253)
+-- Name: fact_player_season_playbyplay; Type: TABLE; Schema: nba; Owner: postgres
+--
+
+CREATE TABLE nba.fact_player_season_playbyplay (
+    player_id character varying(15) NOT NULL,
+    season_id integer NOT NULL,
+    team_id integer NOT NULL,
+    plus_minus_per_100_on numeric(5,1),
+    plus_minus_per100_off numeric(5,1),
+    bad_passes integer,
+    lost_balls integer,
+    shooting_fouls_commited integer,
+    offensive_fouls_committed integer,
+    shooting_fouls_drawn integer,
+    offensive_fouls_drawn integer,
+    points_generated_by_assists integer,
+    and_ones integer,
+    field_goal_attempts_blocked integer
+);
+
+
+ALTER TABLE nba.fact_player_season_playbyplay OWNER TO postgres;
+
+--
+-- TOC entry 231 (class 1259 OID 17259)
+-- Name: fact_player_season_shooting; Type: TABLE; Schema: nba; Owner: postgres
+--
+
+CREATE TABLE nba.fact_player_season_shooting (
+    player_id character varying(15) NOT NULL,
+    season_id integer NOT NULL,
+    team_id integer NOT NULL,
+    fg_percentage numeric(4,3),
+    percentage_of_fga_from_2p numeric(4,3),
+    percentage_of_fga_from_0_to_3 numeric(4,3),
+    percentage_of_fga_from_3_to_10 numeric(4,3),
+    percentage_of_fga_from_10_to_16 numeric(4,3),
+    percentage_of_fga_from_16_to_3p numeric(4,3),
+    percentage_of_fga_from_3p numeric(4,3),
+    fg_percentage_from_2p numeric(4,3),
+    fg_percentage_from_0_to_3 numeric(4,3),
+    fg_percentage_from_3_to_10 numeric(4,3),
+    fg_percentage_from_10_to_16 numeric(4,3),
+    fg_percentage_from_16_to_3p numeric(4,3),
+    fg_percentage_from_3p numeric(4,3),
+    percentage_of_2pfg_assisted numeric(4,3),
+    percentage_of_3pfg_assisted numeric(4,3),
+    percentage_of_fga_from_dunks numeric(4,3),
+    number_of_made_dunks integer,
+    percentage_of_3pa_from_corner numeric(4,3),
+    three_point_percentage_from_corner numeric(4,3)
+);
+
+
+ALTER TABLE nba.fact_player_season_shooting OWNER TO postgres;
+
+--
+-- TOC entry 232 (class 1259 OID 17265)
+-- Name: fact_player_season_totals; Type: TABLE; Schema: nba; Owner: postgres
+--
+
+CREATE TABLE nba.fact_player_season_totals (
+    player_id character varying(15) NOT NULL,
+    season_id integer NOT NULL,
+    team_id integer NOT NULL,
+    games_played integer NOT NULL,
+    games_started integer,
+    minutes_played integer NOT NULL,
+    field_goals integer,
+    field_goals_attempted integer,
+    three_pointers integer,
+    three_pointers_attempted integer,
+    two_pointers integer,
+    two_pointers_attempted integer,
+    free_throws integer,
+    free_throw_attempts integer,
+    offensive_rebounds integer,
+    defensive_rebounds integer,
+    total_rebounds integer,
+    assists integer,
+    steals integer,
+    blocks integer,
+    turnovers integer,
+    personal_fouls integer,
+    points integer
+);
+
+
+ALTER TABLE nba.fact_player_season_totals OWNER TO postgres;
+
+--
+-- TOC entry 233 (class 1259 OID 17273)
+-- Name: fact_team_season_advanced; Type: TABLE; Schema: nba; Owner: postgres
+--
+
+CREATE TABLE nba.fact_team_season_advanced (
+    team_id integer NOT NULL,
+    season_id integer NOT NULL,
+    avg_age numeric(4,1),
+    wins integer,
+    losses integer,
+    expected_wins numeric(4,1),
+    expected_losses numeric(4,1),
+    margin_of_victory numeric(5,2),
+    strength_of_schedule numeric(5,2),
+    simple_rating_system numeric(5,2),
+    offensive_rating numeric(5,1),
+    defensive_rating numeric(5,1),
+    net_rating numeric(5,1),
+    pace numeric(5,1),
+    free_throw_rate numeric(4,3),
+    three_point_attempt_rate numeric(4,3),
+    true_shooting_percentage numeric(4,3),
+    efg_percentage numeric(4,3),
+    tov_percentage numeric(5,1),
+    orb_percentage numeric(5,1),
+    ft_per_fga numeric(4,3),
+    opp_efg_percentage numeric(4,3),
+    opp_tov_percentage numeric(5,1),
+    drb_percentage numeric(5,1),
+    opp_ft_per_fga numeric(4,3)
+);
+
+
+ALTER TABLE nba.fact_team_season_advanced OWNER TO postgres;
+
+--
+-- TOC entry 234 (class 1259 OID 17278)
+-- Name: fact_team_season_opponent_per100; Type: TABLE; Schema: nba; Owner: postgres
+--
+
+CREATE TABLE nba.fact_team_season_opponent_per100 (
+    team_id integer NOT NULL,
+    season_id integer NOT NULL,
+    opp_field_goals numeric(5,1),
+    opp_field_goal_attempts numeric(5,1),
+    opp_three_pointers numeric(5,1),
+    opp_three_point_attempts numeric(5,1),
+    opp_two_pointers numeric(5,1),
+    opp_two_point_attempts numeric(5,1),
+    opp_free_throws numeric(5,1),
+    opp_free_throw_attempts numeric(5,1),
+    opp_offensive_rebounds numeric(5,1),
+    opp_defensive_rebounds numeric(5,1),
+    opp_total_rebounds numeric(5,1),
+    opp_assists numeric(5,1),
+    opp_steals numeric(5,1),
+    opp_blocks numeric(5,1),
+    opp_turnovers numeric(5,1),
+    opp_personal_fouls numeric(5,1),
+    opp_points numeric(5,1)
+);
+
+
+ALTER TABLE nba.fact_team_season_opponent_per100 OWNER TO postgres;
+
+--
+-- TOC entry 235 (class 1259 OID 17283)
+-- Name: fact_team_season_opponent_shooting; Type: TABLE; Schema: nba; Owner: postgres
+--
+
+CREATE TABLE nba.fact_team_season_opponent_shooting (
+    team_id integer NOT NULL,
+    season_id integer NOT NULL,
+    opp_fg_percentage numeric(4,3),
+    opp_percentage_2pt_fga numeric(4,3),
+    opp_percentage_fga_0_3 numeric(4,3),
+    opp_percentage_fga_3_10 numeric(4,3),
+    opp_percentage_fga_10_16 numeric(4,3),
+    opp_percentage_fga_16_3p numeric(4,3),
+    opp_percentage_fga_3p numeric(4,3),
+    opp_fg_pct_2pt numeric(4,3),
+    opp_fg_pct_0_3 numeric(4,3),
+    opp_fg_pct_3_10 numeric(4,3),
+    opp_fg_pct_10_16 numeric(4,3),
+    opp_fg_pct_16_3p numeric(4,3),
+    opp_fg_pct_3p numeric(4,3),
+    opp_percentage_2pt_assisted numeric(4,3),
+    opp_percentage_3pt_assisted numeric(4,3),
+    opp_percentage_dunk_fga numeric(4,3),
+    opp_made_dunks integer,
+    opp_percentage_layup_fga numeric(4,3),
+    opp_made_layups integer,
+    opp_percentage_corner_3pa numeric(4,3),
+    opp_corner_3p_percentage numeric(4,3)
+);
+
+
+ALTER TABLE nba.fact_team_season_opponent_shooting OWNER TO postgres;
+
+--
+-- TOC entry 236 (class 1259 OID 17288)
+-- Name: fact_team_season_opponent_totals; Type: TABLE; Schema: nba; Owner: postgres
+--
+
+CREATE TABLE nba.fact_team_season_opponent_totals (
+    team_id integer NOT NULL,
+    season_id integer NOT NULL,
+    games_played integer,
+    opp_field_goals numeric(6,1),
+    opp_field_goal_attempts numeric(6,1),
+    opp_three_pointers numeric(6,1),
+    opp_three_point_attempts numeric(6,1),
+    opp_two_pointers numeric(6,1),
+    opp_two_point_attempts numeric(6,1),
+    opp_free_throws numeric(6,1),
+    opp_free_throw_attempts numeric(6,1),
+    opp_offensive_rebounds numeric(6,1),
+    opp_defensive_rebounds numeric(6,1),
+    opp_total_rebounds numeric(6,1),
+    opp_assists numeric(6,1),
+    opp_steals numeric(6,1),
+    opp_blocks numeric(6,1),
+    opp_turnovers numeric(6,1),
+    opp_personal_fouls numeric(6,1),
+    opp_points numeric(6,1)
+);
+
+
+ALTER TABLE nba.fact_team_season_opponent_totals OWNER TO postgres;
+
+--
+-- TOC entry 237 (class 1259 OID 17293)
+-- Name: fact_team_season_per100; Type: TABLE; Schema: nba; Owner: postgres
+--
+
+CREATE TABLE nba.fact_team_season_per100 (
+    team_id integer NOT NULL,
+    season_id integer NOT NULL,
+    field_goals numeric(5,1),
+    field_goal_attempts numeric(5,1),
+    three_pointers numeric(5,1),
+    three_point_attempts numeric(5,1),
+    two_pointers numeric(5,1),
+    two_point_attempts numeric(5,1),
+    free_throws numeric(5,1),
+    free_throw_attempts numeric(5,1),
+    offensive_rebounds numeric(5,1),
+    defensive_rebounds numeric(5,1),
+    total_rebounds numeric(5,1),
+    assists numeric(5,1),
+    steals numeric(5,1),
+    blocks numeric(5,1),
+    turnovers numeric(5,1),
+    personal_fouls numeric(5,1),
+    points numeric(5,1)
+);
+
+
+ALTER TABLE nba.fact_team_season_per100 OWNER TO postgres;
+
+--
+-- TOC entry 238 (class 1259 OID 17298)
+-- Name: fact_team_season_shooting; Type: TABLE; Schema: nba; Owner: postgres
+--
+
+CREATE TABLE nba.fact_team_season_shooting (
+    team_id integer NOT NULL,
+    season_id integer NOT NULL,
+    fg_percentage numeric(4,3),
+    percentage_of_fga_2pt numeric(4,3),
+    percentage_of_fga_0_3 numeric(4,3),
+    percentage_of_fga_3_10 numeric(4,3),
+    percentage_of_fga_10_16 numeric(4,3),
+    percentage_of_fga_16_3p numeric(4,3),
+    percentage_of_fga_3p numeric(4,3),
+    fg_pct_2pt numeric(4,3),
+    fg_pct_0_3 numeric(4,3),
+    fg_pct_3_10 numeric(4,3),
+    fg_pct_10_16 numeric(4,3),
+    fg_pct_16_3p numeric(4,3),
+    fg_pct_3p numeric(4,3),
+    percentage_2pt_assisted numeric(4,3),
+    percentage_3pt_assisted numeric(4,3),
+    percentage_dunk_fga numeric(4,3),
+    made_dunks integer,
+    percentage_layup_fga numeric(4,3),
+    made_layups integer,
+    percentage_corner_3pa numeric(4,3),
+    corner_3p_percentage numeric(4,3)
+);
+
+
+ALTER TABLE nba.fact_team_season_shooting OWNER TO postgres;
+
+--
+-- TOC entry 239 (class 1259 OID 17303)
+-- Name: fact_team_season_totals; Type: TABLE; Schema: nba; Owner: postgres
+--
+
+CREATE TABLE nba.fact_team_season_totals (
+    team_id integer NOT NULL,
+    season_id integer NOT NULL,
+    field_goals integer,
+    field_goal_attempts integer,
+    three_pointers integer,
+    three_point_attempts integer,
+    two_pointers integer,
+    two_point_attempts integer,
+    free_throws integer,
+    free_throw_attempts integer,
+    offensive_rebounds integer,
+    defensive_rebounds integer,
+    total_rebounds integer,
+    assists integer,
+    steals integer,
+    blocks integer,
+    turnovers integer,
+    personal_fouls integer,
+    points integer
+);
+
+
+ALTER TABLE nba.fact_team_season_totals OWNER TO postgres;
+
+--
+-- TOC entry 240 (class 1259 OID 17308)
+-- Name: ref_rookie_eligibility; Type: TABLE; Schema: nba; Owner: postgres
+--
+
+CREATE TABLE nba.ref_rookie_eligibility (
+    player_id character varying(15) NOT NULL,
+    season_id integer NOT NULL
+);
+
+
+ALTER TABLE nba.ref_rookie_eligibility OWNER TO postgres;
+
+--
+-- TOC entry 241 (class 1259 OID 17313)
+-- Name: v_percentiles_player; Type: VIEW; Schema: nba; Owner: postgres
+--
+
+CREATE VIEW nba.v_percentiles_player AS
+ WITH base AS (
+         SELECT a.player_id,
+            a.season_id,
+            a.team_id,
+            a.true_shooting_percentage,
+            a.three_point_attempt_rate,
+            a.free_throw_attempt_rate,
+            a.assist_percentage,
+            a.steal_percentage,
+            a.block_percentage,
+            a.turnover_percentage,
+            a.usage_rate,
+            a.offensive_win_shares,
+            a.defensive_win_shares,
+            a.win_shares_per48,
+            a.offensive_box_plus_minus,
+            a.defensive_box_plus_minus,
+            a.box_plus_minus,
+            a.value_over_replacement_player,
+            p.offensive_rating,
+            p.defensive_rating,
+            (p.offensive_rating - p.defensive_rating) AS net_rating,
+            p.assists AS assists_per100,
+            p.steals AS stl_per100,
+            p.blocks AS blk_per100,
+            p.defensive_rebounds AS dreb_per100,
+            p.personal_fouls AS pf_per100,
+            (p.steals + p.blocks) AS stocks_per100,
+            t.minutes_played,
+            t.games_played,
+            t.games_started,
+            t.points AS raw_points,
+            t.assists AS raw_assists,
+            t.steals AS raw_steals,
+            t.blocks AS raw_blocks,
+            ((t.points)::numeric + ((t.assists)::numeric * 2.2)) AS points_created,
+                CASE
+                    WHEN (t.turnovers > 0) THEN round(((t.assists)::numeric / (t.turnovers)::numeric), 4)
+                    ELSE NULL::numeric
+                END AS ast_tov_ratio,
+                CASE
+                    WHEN ((t.field_goals_attempted + t.free_throw_attempts) > 0) THEN round(((t.points)::numeric / ((t.field_goals_attempted + t.free_throw_attempts))::numeric), 4)
+                    ELSE NULL::numeric
+                END AS ppsa,
+            s.season
+           FROM (((nba.fact_player_season_advanced a
+             JOIN nba.fact_player_season_per100 p ON ((((a.player_id)::text = (p.player_id)::text) AND (a.season_id = p.season_id) AND (a.team_id = p.team_id))))
+             JOIN nba.fact_player_season_totals t ON ((((a.player_id)::text = (t.player_id)::text) AND (a.season_id = t.season_id) AND (a.team_id = t.team_id))))
+             JOIN nba.dim_seasons s ON ((a.season_id = s.season_id)))
+          WHERE ((t.minutes_played > 0) AND ((((s.season)::text = ANY (ARRAY[('2019-20'::character varying)::text, ('2020-21'::character varying)::text])) AND (t.minutes_played >= 600)) OR (((s.season)::text <> ALL (ARRAY[('2019-20'::character varying)::text, ('2020-21'::character varying)::text])) AND (t.minutes_played >= 1000))))
+        ), ranked AS (
+         SELECT base.player_id,
+            base.season_id,
+            base.team_id,
+            base.true_shooting_percentage,
+            base.three_point_attempt_rate,
+            base.free_throw_attempt_rate,
+            base.assist_percentage,
+            base.steal_percentage,
+            base.block_percentage,
+            base.turnover_percentage,
+            base.usage_rate,
+            base.offensive_win_shares,
+            base.defensive_win_shares,
+            base.win_shares_per48,
+            base.offensive_box_plus_minus,
+            base.defensive_box_plus_minus,
+            base.box_plus_minus,
+            base.value_over_replacement_player,
+            base.offensive_rating,
+            base.defensive_rating,
+            base.net_rating,
+            base.assists_per100,
+            base.stl_per100,
+            base.blk_per100,
+            base.dreb_per100,
+            base.pf_per100,
+            base.stocks_per100,
+            base.minutes_played,
+            base.games_played,
+            base.games_started,
+            base.raw_points,
+            base.raw_assists,
+            base.raw_steals,
+            base.raw_blocks,
+            base.points_created,
+            base.ast_tov_ratio,
+            base.ppsa,
+            base.season,
+            count(*) OVER (PARTITION BY base.season_id) AS total_players,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.true_shooting_percentage DESC) AS rnk_ts,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.three_point_attempt_rate DESC) AS rnk_3par,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.free_throw_attempt_rate DESC) AS rnk_ftr,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.assist_percentage DESC) AS rnk_ast_pct,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.steal_percentage DESC) AS rnk_stl_pct,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.block_percentage DESC) AS rnk_blk_pct,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.usage_rate DESC) AS rnk_usg,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.offensive_win_shares DESC) AS rnk_ows,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.defensive_win_shares DESC) AS rnk_dws,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.win_shares_per48 DESC) AS rnk_ws48,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.offensive_box_plus_minus DESC) AS rnk_obpm,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.defensive_box_plus_minus DESC) AS rnk_dbpm,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.box_plus_minus DESC) AS rnk_bpm,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.value_over_replacement_player DESC) AS rnk_vorp,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.offensive_rating DESC) AS rnk_ortg,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.net_rating DESC) AS rnk_net,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.assists_per100 DESC) AS rnk_ast100,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.stl_per100 DESC) AS rnk_stl100,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.blk_per100 DESC) AS rnk_blk100,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.dreb_per100 DESC) AS rnk_dreb100,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.stocks_per100 DESC) AS rnk_stocks100,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.points_created DESC) AS rnk_pts_created,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.ast_tov_ratio DESC) AS rnk_ast_tov,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.ppsa DESC) AS rnk_ppsa,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.raw_points DESC) AS rnk_pts100,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.turnover_percentage) AS rnk_tov_inv,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.defensive_rating) AS rnk_drtg_inv,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.pf_per100) AS rnk_pf100_inv
+           FROM base
+        )
+ SELECT player_id,
+    season_id,
+    team_id,
+    games_played,
+    games_started,
+    minutes_played,
+    points_created,
+    raw_points,
+    raw_assists,
+    raw_steals,
+    raw_blocks,
+    ast_tov_ratio,
+    stocks_per100,
+    round(((((total_players - rnk_ts))::numeric / (NULLIF((total_players - 1), 0))::numeric) * (100)::numeric), 2) AS pct_ts,
+    round(((((total_players - rnk_3par))::numeric / (NULLIF((total_players - 1), 0))::numeric) * (100)::numeric), 2) AS pct_3par,
+    round(((((total_players - rnk_ftr))::numeric / (NULLIF((total_players - 1), 0))::numeric) * (100)::numeric), 2) AS pct_ftr,
+    round(((((total_players - rnk_ast_pct))::numeric / (NULLIF((total_players - 1), 0))::numeric) * (100)::numeric), 2) AS pct_ast_pct,
+    round(((((total_players - rnk_stl_pct))::numeric / (NULLIF((total_players - 1), 0))::numeric) * (100)::numeric), 2) AS pct_stl_pct,
+    round(((((total_players - rnk_blk_pct))::numeric / (NULLIF((total_players - 1), 0))::numeric) * (100)::numeric), 2) AS pct_blk_pct,
+    round(((((total_players - rnk_usg))::numeric / (NULLIF((total_players - 1), 0))::numeric) * (100)::numeric), 2) AS pct_usg,
+    round(((((total_players - rnk_ows))::numeric / (NULLIF((total_players - 1), 0))::numeric) * (100)::numeric), 2) AS pct_ows,
+    round(((((total_players - rnk_dws))::numeric / (NULLIF((total_players - 1), 0))::numeric) * (100)::numeric), 2) AS pct_dws,
+    round(((((total_players - rnk_ws48))::numeric / (NULLIF((total_players - 1), 0))::numeric) * (100)::numeric), 2) AS pct_ws48,
+    round(((((total_players - rnk_obpm))::numeric / (NULLIF((total_players - 1), 0))::numeric) * (100)::numeric), 2) AS pct_obpm,
+    round(((((total_players - rnk_dbpm))::numeric / (NULLIF((total_players - 1), 0))::numeric) * (100)::numeric), 2) AS pct_dbpm,
+    round(((((total_players - rnk_bpm))::numeric / (NULLIF((total_players - 1), 0))::numeric) * (100)::numeric), 2) AS pct_bpm,
+    round(((((total_players - rnk_vorp))::numeric / (NULLIF((total_players - 1), 0))::numeric) * (100)::numeric), 2) AS pct_vorp,
+    round(((((total_players - rnk_ortg))::numeric / (NULLIF((total_players - 1), 0))::numeric) * (100)::numeric), 2) AS pct_ortg,
+    round(((((total_players - rnk_net))::numeric / (NULLIF((total_players - 1), 0))::numeric) * (100)::numeric), 2) AS pct_net,
+    round(((((total_players - rnk_ast100))::numeric / (NULLIF((total_players - 1), 0))::numeric) * (100)::numeric), 2) AS pct_ast100,
+    round(((((total_players - rnk_stl100))::numeric / (NULLIF((total_players - 1), 0))::numeric) * (100)::numeric), 2) AS pct_stl100,
+    round(((((total_players - rnk_blk100))::numeric / (NULLIF((total_players - 1), 0))::numeric) * (100)::numeric), 2) AS pct_blk100,
+    round(((((total_players - rnk_dreb100))::numeric / (NULLIF((total_players - 1), 0))::numeric) * (100)::numeric), 2) AS pct_dreb100,
+    round(((((total_players - rnk_stocks100))::numeric / (NULLIF((total_players - 1), 0))::numeric) * (100)::numeric), 2) AS pct_stocks100,
+    round(((((total_players - rnk_pts_created))::numeric / (NULLIF((total_players - 1), 0))::numeric) * (100)::numeric), 2) AS pct_pts_created,
+    round(((((total_players - rnk_ast_tov))::numeric / (NULLIF((total_players - 1), 0))::numeric) * (100)::numeric), 2) AS pct_ast_tov,
+    round(((((total_players - rnk_ppsa))::numeric / (NULLIF((total_players - 1), 0))::numeric) * (100)::numeric), 2) AS pct_ppsa,
+    round(((((total_players - rnk_pts100))::numeric / (NULLIF((total_players - 1), 0))::numeric) * (100)::numeric), 2) AS pct_pts100,
+    ((100)::numeric - round(((((total_players - rnk_tov_inv))::numeric / (NULLIF((total_players - 1), 0))::numeric) * (100)::numeric), 2)) AS pct_tov_inv,
+    ((100)::numeric - round(((((total_players - rnk_drtg_inv))::numeric / (NULLIF((total_players - 1), 0))::numeric) * (100)::numeric), 2)) AS pct_drtg_inv,
+    ((100)::numeric - round(((((total_players - rnk_pf100_inv))::numeric / (NULLIF((total_players - 1), 0))::numeric) * (100)::numeric), 2)) AS pct_pf100_inv
+   FROM ranked;
+
+
+ALTER VIEW nba.v_percentiles_player OWNER TO postgres;
+
+--
+-- TOC entry 242 (class 1259 OID 17318)
+-- Name: v_percentiles_team; Type: VIEW; Schema: nba; Owner: postgres
+--
+
+CREATE VIEW nba.v_percentiles_team AS
+ WITH base AS (
+         SELECT a.team_id,
+            a.season_id,
+            a.offensive_rating,
+            a.defensive_rating,
+            a.net_rating,
+            a.true_shooting_percentage,
+            a.efg_percentage,
+            a.tov_percentage,
+            a.drb_percentage,
+            a.opp_efg_percentage,
+            a.opp_tov_percentage,
+            a.three_point_attempt_rate,
+            a.free_throw_rate,
+            a.ft_per_fga,
+            ((a.wins)::numeric / ((a.wins + a.losses))::numeric) AS win_pct,
+            a.opp_efg_percentage AS opp_ts_proxy,
+            s.opp_fg_pct_0_3
+           FROM (nba.fact_team_season_advanced a
+             JOIN nba.fact_team_season_opponent_shooting s ON (((a.team_id = s.team_id) AND (a.season_id = s.season_id))))
+        ), ranked AS (
+         SELECT base.team_id,
+            base.season_id,
+            base.offensive_rating,
+            base.defensive_rating,
+            base.net_rating,
+            base.true_shooting_percentage,
+            base.efg_percentage,
+            base.tov_percentage,
+            base.drb_percentage,
+            base.opp_efg_percentage,
+            base.opp_tov_percentage,
+            base.three_point_attempt_rate,
+            base.free_throw_rate,
+            base.ft_per_fga,
+            base.win_pct,
+            base.opp_ts_proxy,
+            base.opp_fg_pct_0_3,
+            count(*) OVER (PARTITION BY base.season_id) AS total_teams,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.offensive_rating DESC) AS rnk_ortg,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.net_rating DESC) AS rnk_net,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.true_shooting_percentage DESC) AS rnk_ts,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.efg_percentage DESC) AS rnk_efg,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.drb_percentage DESC) AS rnk_dreb,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.opp_tov_percentage DESC) AS rnk_opp_tov,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.three_point_attempt_rate DESC) AS rnk_3par,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.free_throw_rate DESC) AS rnk_ftr,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.win_pct DESC) AS rnk_win_pct,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.defensive_rating) AS rnk_drtg_inv,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.opp_efg_percentage) AS rnk_opp_efg_inv,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.opp_ts_proxy) AS rnk_opp_ts_inv,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.tov_percentage) AS rnk_tov_inv,
+            rank() OVER (PARTITION BY base.season_id ORDER BY base.opp_fg_pct_0_3) AS rnk_opp_rim_inv
+           FROM base
+        )
+ SELECT team_id,
+    season_id,
+    win_pct,
+    offensive_rating,
+    defensive_rating,
+    net_rating,
+    opp_fg_pct_0_3,
+    round(((((total_teams - rnk_ortg))::numeric / (NULLIF((total_teams - 1), 0))::numeric) * (100)::numeric), 2) AS pct_ortg,
+    round(((((total_teams - rnk_net))::numeric / (NULLIF((total_teams - 1), 0))::numeric) * (100)::numeric), 2) AS pct_net,
+    round(((((total_teams - rnk_ts))::numeric / (NULLIF((total_teams - 1), 0))::numeric) * (100)::numeric), 2) AS pct_ts,
+    round(((((total_teams - rnk_efg))::numeric / (NULLIF((total_teams - 1), 0))::numeric) * (100)::numeric), 2) AS pct_efg,
+    round(((((total_teams - rnk_dreb))::numeric / (NULLIF((total_teams - 1), 0))::numeric) * (100)::numeric), 2) AS pct_dreb,
+    round(((((total_teams - rnk_opp_tov))::numeric / (NULLIF((total_teams - 1), 0))::numeric) * (100)::numeric), 2) AS pct_opp_tov,
+    round(((((total_teams - rnk_3par))::numeric / (NULLIF((total_teams - 1), 0))::numeric) * (100)::numeric), 2) AS pct_3par,
+    round(((((total_teams - rnk_ftr))::numeric / (NULLIF((total_teams - 1), 0))::numeric) * (100)::numeric), 2) AS pct_ftr,
+    round(((((total_teams - rnk_win_pct))::numeric / (NULLIF((total_teams - 1), 0))::numeric) * (100)::numeric), 2) AS pct_win_pct,
+    round(((((total_teams - rnk_drtg_inv))::numeric / (NULLIF((total_teams - 1), 0))::numeric) * (100)::numeric), 2) AS pct_drtg_inv,
+    round(((((total_teams - rnk_opp_efg_inv))::numeric / (NULLIF((total_teams - 1), 0))::numeric) * (100)::numeric), 2) AS pct_opp_efg_inv,
+    round(((((total_teams - rnk_opp_ts_inv))::numeric / (NULLIF((total_teams - 1), 0))::numeric) * (100)::numeric), 2) AS pct_opp_ts_inv,
+    round(((((total_teams - rnk_tov_inv))::numeric / (NULLIF((total_teams - 1), 0))::numeric) * (100)::numeric), 2) AS pct_tov_inv,
+    round(((((total_teams - rnk_opp_rim_inv))::numeric / (NULLIF((total_teams - 1), 0))::numeric) * (100)::numeric), 2) AS pct_opp_rim_inv
+   FROM ranked;
+
+
+ALTER VIEW nba.v_percentiles_team OWNER TO postgres;
+
+--
+-- TOC entry 243 (class 1259 OID 17323)
+-- Name: v_composite_scores; Type: VIEW; Schema: nba; Owner: postgres
+--
+
+CREATE VIEW nba.v_composite_scores AS
+ WITH player_team AS (
+         SELECT p.player_id,
+            p.season_id,
+            p.team_id,
+            p.games_played,
+            p.games_started,
+            p.minutes_played,
+            p.points_created,
+            p.pct_pts_created,
+            p.ast_tov_ratio,
+            p.points_created AS pts_created_raw,
+            round((p.pct_ts * ((1)::numeric + ((p.pct_usg / 100.0) * 0.15))), 2) AS uae,
+            round(((((0.50 * p.pct_ts) + (0.25 * p.pct_ftr)) + (0.15 * p.pct_ppsa)) + (0.10 * p.pct_3par)), 2) AS scoring_efficiency_score,
+            round(((((0.40 * p.pct_ast_pct) + (0.25 * p.pct_ast_tov)) + (0.20 * p.pct_ast100)) + (0.15 * p.pct_ortg)), 2) AS playmaking_score,
+            round(((((0.25 * p.pct_dbpm) + (0.20 * p.pct_dws)) + (0.25 * p.pct_stl_pct)) + (0.30 * p.pct_blk_pct)), 2) AS defensive_impact_score,
+            round((((((0.35 * p.pct_stl_pct) + (0.25 * p.pct_stocks100)) + (0.20 * p.pct_blk_pct)) + (0.15 * p.pct_dreb100)) + (0.05 * p.pct_pf100_inv)), 2) AS defensive_activity_score,
+            round(((0.70 * p.pct_stl_pct) + (0.30 * p.pct_stl100)), 2) AS perimeter_defense_score,
+            p.pct_obpm,
+            p.pct_ortg,
+            p.pct_ows,
+            p.pct_vorp,
+            p.pct_ws48,
+            p.pct_net,
+            p.pct_bpm,
+            p.pct_blk_pct,
+            p.pct_dws,
+            p.pct_ts
+           FROM nba.v_percentiles_player p
+        ), with_rim AS (
+         SELECT pt.player_id,
+            pt.season_id,
+            pt.team_id,
+            pt.games_played,
+            pt.games_started,
+            pt.minutes_played,
+            pt.points_created,
+            pt.pct_pts_created,
+            pt.ast_tov_ratio,
+            pt.pts_created_raw,
+            pt.uae,
+            pt.scoring_efficiency_score,
+            pt.playmaking_score,
+            pt.defensive_impact_score,
+            pt.defensive_activity_score,
+            pt.perimeter_defense_score,
+            pt.pct_obpm,
+            pt.pct_ortg,
+            pt.pct_ows,
+            pt.pct_vorp,
+            pt.pct_ws48,
+            pt.pct_net,
+            pt.pct_bpm,
+            pt.pct_blk_pct,
+            pt.pct_dws,
+            pt.pct_ts,
+            round(((0.55 * pt.pct_blk_pct) + (0.45 * t.pct_opp_rim_inv)), 2) AS rim_protection_score
+           FROM (player_team pt
+             JOIN nba.v_percentiles_team t ON (((pt.team_id = t.team_id) AND (pt.season_id = t.season_id))))
+        ), with_uae_pct AS (
+         SELECT with_rim.player_id,
+            with_rim.season_id,
+            with_rim.team_id,
+            with_rim.games_played,
+            with_rim.games_started,
+            with_rim.minutes_played,
+            with_rim.points_created,
+            with_rim.pct_pts_created,
+            with_rim.ast_tov_ratio,
+            with_rim.pts_created_raw,
+            with_rim.uae,
+            with_rim.scoring_efficiency_score,
+            with_rim.playmaking_score,
+            with_rim.defensive_impact_score,
+            with_rim.defensive_activity_score,
+            with_rim.perimeter_defense_score,
+            with_rim.pct_obpm,
+            with_rim.pct_ortg,
+            with_rim.pct_ows,
+            with_rim.pct_vorp,
+            with_rim.pct_ws48,
+            with_rim.pct_net,
+            with_rim.pct_bpm,
+            with_rim.pct_blk_pct,
+            with_rim.pct_dws,
+            with_rim.pct_ts,
+            with_rim.rim_protection_score,
+            round(((((count(*) OVER (PARTITION BY with_rim.season_id) - rank() OVER (PARTITION BY with_rim.season_id ORDER BY with_rim.uae DESC)))::numeric / (NULLIF((count(*) OVER (PARTITION BY with_rim.season_id) - 1), 0))::numeric) * (100)::numeric), 2) AS uae_pct
+           FROM with_rim
+        )
+ SELECT player_id,
+    season_id,
+    team_id,
+    games_played,
+    games_started,
+    minutes_played,
+    pts_created_raw,
+    pct_pts_created,
+    ast_tov_ratio,
+    uae,
+    uae_pct,
+    scoring_efficiency_score,
+    playmaking_score,
+    defensive_impact_score,
+    defensive_activity_score,
+    rim_protection_score,
+    perimeter_defense_score,
+    round((((((0.30 * pct_obpm) + (0.25 * pct_ortg)) + (0.20 * pct_ows)) + (0.15 * uae_pct)) + (0.10 * pct_pts_created)), 2) AS offensive_impact_score,
+    pct_vorp,
+    pct_ws48,
+    pct_net,
+    pct_bpm,
+    pct_ts,
+    pct_dws,
+    pct_blk_pct
+   FROM with_uae_pct;
+
+
+ALTER VIEW nba.v_composite_scores OWNER TO postgres;
+
+--
+-- TOC entry 244 (class 1259 OID 17328)
+-- Name: v_award_all_nba; Type: VIEW; Schema: nba; Owner: postgres
+--
+
+CREATE VIEW nba.v_award_all_nba AS
+ WITH pv AS (
+         SELECT c.player_id,
+            c.season_id,
+            c.team_id,
+            c.games_played,
+            c.scoring_efficiency_score,
+            c.pct_pts_created,
+            round(((((count(*) OVER (PARTITION BY c.season_id) - rank() OVER (PARTITION BY c.season_id ORDER BY c.offensive_impact_score DESC)))::numeric / (NULLIF((count(*) OVER (PARTITION BY c.season_id) - 1), 0))::numeric) * (100)::numeric), 2) AS off_impact_pct,
+            round(((((count(*) OVER (PARTITION BY c.season_id) - rank() OVER (PARTITION BY c.season_id ORDER BY c.defensive_impact_score DESC)))::numeric / (NULLIF((count(*) OVER (PARTITION BY c.season_id) - 1), 0))::numeric) * (100)::numeric), 2) AS def_impact_pct,
+            c.pct_vorp,
+            c.pct_bpm,
+            p.pct_usg
+           FROM (nba.v_composite_scores c
+             JOIN nba.v_percentiles_player p ON ((((c.player_id)::text = (p.player_id)::text) AND (c.season_id = p.season_id) AND (c.team_id = p.team_id))))
+        ), pv2 AS (
+         SELECT pv.player_id,
+            pv.season_id,
+            pv.team_id,
+            pv.games_played,
+            pv.scoring_efficiency_score,
+            pv.pct_pts_created,
+            pv.off_impact_pct,
+            pv.def_impact_pct,
+            pv.pct_vorp,
+            pv.pct_bpm,
+            pv.pct_usg,
+            round(((((0.30 * pv.off_impact_pct) + (0.25 * pv.def_impact_pct)) + (0.25 * pv.pct_vorp)) + (0.20 * pv.pct_bpm)), 2) AS player_value_score
+           FROM pv
+        )
+ SELECT pv2.player_id,
+    pv2.season_id,
+    pv2.team_id,
+    dp.player_name,
+    ds.season,
+    pv2.games_played,
+    round(((((((0.25 * pv2.off_impact_pct) + (0.20 * pv2.player_value_score)) + (0.15 * pv2.pct_usg)) + (0.15 * pv2.def_impact_pct)) + (0.15 * pv2.pct_pts_created)) + (0.10 * pv2.scoring_efficiency_score)), 2) AS award_score,
+    rank() OVER (PARTITION BY pv2.season_id ORDER BY (round(((((((0.25 * pv2.off_impact_pct) + (0.20 * pv2.player_value_score)) + (0.15 * pv2.pct_usg)) + (0.15 * pv2.def_impact_pct)) + (0.15 * pv2.pct_pts_created)) + (0.10 * pv2.scoring_efficiency_score)), 2)) DESC) AS award_rank,
+    'All NBA'::text AS award_name
+   FROM ((pv2
+     JOIN nba.dim_players dp ON (((pv2.player_id)::text = (dp.player_id)::text)))
+     JOIN nba.dim_seasons ds ON ((pv2.season_id = ds.season_id)));
+
+
+ALTER VIEW nba.v_award_all_nba OWNER TO postgres;
+
+--
+-- TOC entry 245 (class 1259 OID 17333)
+-- Name: v_team_scores; Type: VIEW; Schema: nba; Owner: postgres
+--
+
+CREATE VIEW nba.v_team_scores AS
+ SELECT team_id,
+    season_id,
+    win_pct,
+    offensive_rating,
+    defensive_rating,
+    net_rating,
+    round((((((0.35 * pct_ortg) + (0.25 * pct_ts)) + (0.20 * pct_efg)) + (0.10 * pct_opp_tov)) + (0.10 * pct_3par)), 2) AS team_offense_score,
+    round((((((0.35 * pct_drtg_inv) + (0.25 * pct_opp_efg_inv)) + (0.15 * pct_opp_ts_inv)) + (0.15 * pct_dreb)) + (0.10 * pct_opp_tov)), 2) AS team_defense_score
+   FROM nba.v_percentiles_team;
+
+
+ALTER VIEW nba.v_team_scores OWNER TO postgres;
+
+--
+-- TOC entry 246 (class 1259 OID 17337)
+-- Name: v_award_best_defensive_team; Type: VIEW; Schema: nba; Owner: postgres
+--
+
+CREATE VIEW nba.v_award_best_defensive_team AS
+ SELECT ts.team_id,
+    ts.season_id,
+    dt.team_name,
+    s.season,
+    round(ts.team_defense_score, 2) AS award_score,
+    rank() OVER (PARTITION BY ts.season_id ORDER BY ts.team_defense_score DESC) AS award_rank
+   FROM ((nba.v_team_scores ts
+     JOIN nba.dim_teams dt ON ((ts.team_id = dt.team_id)))
+     JOIN nba.dim_seasons s ON ((ts.season_id = s.season_id)));
+
+
+ALTER VIEW nba.v_award_best_defensive_team OWNER TO postgres;
+
+--
+-- TOC entry 247 (class 1259 OID 17342)
+-- Name: v_award_best_offensive_team; Type: VIEW; Schema: nba; Owner: postgres
+--
+
+CREATE VIEW nba.v_award_best_offensive_team AS
+ SELECT ts.team_id,
+    ts.season_id,
+    dt.team_name,
+    s.season,
+    round(ts.team_offense_score, 2) AS award_score,
+    rank() OVER (PARTITION BY ts.season_id ORDER BY ts.team_offense_score DESC) AS award_rank
+   FROM ((nba.v_team_scores ts
+     JOIN nba.dim_teams dt ON ((ts.team_id = dt.team_id)))
+     JOIN nba.dim_seasons s ON ((ts.season_id = s.season_id)));
+
+
+ALTER VIEW nba.v_award_best_offensive_team OWNER TO postgres;
+
+--
+-- TOC entry 248 (class 1259 OID 17347)
+-- Name: v_team_success; Type: VIEW; Schema: nba; Owner: postgres
+--
+
+CREATE VIEW nba.v_team_success AS
+ WITH scored AS (
+         SELECT t.team_id,
+            t.season_id,
+            t.win_pct,
+            t.offensive_rating,
+            t.defensive_rating,
+            t.net_rating,
+            s.team_offense_score,
+            s.team_defense_score,
+            round(((((rank() OVER (PARTITION BY t.season_id ORDER BY s.team_offense_score DESC) - 1))::numeric / (NULLIF((count(*) OVER (PARTITION BY t.season_id) - 1), 0))::numeric) * (100)::numeric), 2) AS team_offense_pct,
+            round(((((rank() OVER (PARTITION BY t.season_id ORDER BY s.team_defense_score DESC) - 1))::numeric / (NULLIF((count(*) OVER (PARTITION BY t.season_id) - 1), 0))::numeric) * (100)::numeric), 2) AS team_defense_pct,
+            t.pct_net,
+            t.pct_win_pct
+           FROM (nba.v_percentiles_team t
+             JOIN nba.v_team_scores s ON (((t.team_id = s.team_id) AND (t.season_id = s.season_id))))
+        )
+ SELECT team_id,
+    season_id,
+    win_pct,
+    offensive_rating,
+    defensive_rating,
+    net_rating,
+    team_offense_score,
+    team_defense_score,
+    team_offense_pct,
+    team_defense_pct,
+    round(((((0.40 * pct_net) + (0.30 * pct_win_pct)) + (0.15 * team_offense_pct)) + (0.15 * team_defense_pct)), 2) AS team_success_score
+   FROM scored;
+
+
+ALTER VIEW nba.v_team_success OWNER TO postgres;
+
+--
+-- TOC entry 249 (class 1259 OID 17352)
+-- Name: v_award_best_overall_team; Type: VIEW; Schema: nba; Owner: postgres
+--
+
+CREATE VIEW nba.v_award_best_overall_team AS
+ SELECT ts.team_id,
+    ts.season_id,
+    dt.team_name,
+    s.season,
+    round(ts.team_success_score, 2) AS award_score,
+    rank() OVER (PARTITION BY ts.season_id ORDER BY ts.team_success_score DESC) AS award_rank
+   FROM ((nba.v_team_success ts
+     JOIN nba.dim_teams dt ON ((ts.team_id = dt.team_id)))
+     JOIN nba.dim_seasons s ON ((ts.season_id = s.season_id)));
+
+
+ALTER VIEW nba.v_award_best_overall_team OWNER TO postgres;
+
+--
+-- TOC entry 250 (class 1259 OID 17357)
+-- Name: v_award_best_player; Type: VIEW; Schema: nba; Owner: postgres
+--
+
+CREATE VIEW nba.v_award_best_player AS
+ WITH pv AS (
+         SELECT c.player_id,
+            c.season_id,
+            c.team_id,
+            c.games_played,
+            round(((((count(*) OVER (PARTITION BY c.season_id) - rank() OVER (PARTITION BY c.season_id ORDER BY c.offensive_impact_score DESC)))::numeric / (NULLIF((count(*) OVER (PARTITION BY c.season_id) - 1), 0))::numeric) * (100)::numeric), 2) AS off_impact_pct,
+            round(((((count(*) OVER (PARTITION BY c.season_id) - rank() OVER (PARTITION BY c.season_id ORDER BY c.defensive_impact_score DESC)))::numeric / (NULLIF((count(*) OVER (PARTITION BY c.season_id) - 1), 0))::numeric) * (100)::numeric), 2) AS def_impact_pct,
+            c.pct_vorp,
+            c.pct_bpm,
+            p.pct_usg
+           FROM (nba.v_composite_scores c
+             JOIN nba.v_percentiles_player p ON ((((c.player_id)::text = (p.player_id)::text) AND (c.season_id = p.season_id) AND (c.team_id = p.team_id))))
+        ), pv2 AS (
+         SELECT pv.player_id,
+            pv.season_id,
+            pv.team_id,
+            pv.games_played,
+            pv.off_impact_pct,
+            pv.def_impact_pct,
+            pv.pct_vorp,
+            pv.pct_bpm,
+            pv.pct_usg,
+            round(((((0.30 * pv.off_impact_pct) + (0.25 * pv.def_impact_pct)) + (0.25 * pv.pct_vorp)) + (0.20 * pv.pct_bpm)), 2) AS player_value_score
+           FROM pv
+        )
+ SELECT pv2.player_id,
+    pv2.season_id,
+    pv2.team_id,
+    dp.player_name,
+    ds.season,
+    pv2.games_played,
+    round((((((0.40 * pv2.player_value_score) + (0.20 * pv2.off_impact_pct)) + (0.20 * pv2.pct_usg)) + (0.10 * pv2.def_impact_pct)) + (0.10 * pv2.pct_bpm)), 2) AS award_score,
+    rank() OVER (PARTITION BY pv2.season_id ORDER BY (round((((((0.40 * pv2.player_value_score) + (0.20 * pv2.off_impact_pct)) + (0.20 * pv2.pct_usg)) + (0.10 * pv2.def_impact_pct)) + (0.10 * pv2.pct_bpm)), 2)) DESC) AS award_rank,
+    'Best Player'::text AS award_name
+   FROM ((pv2
+     JOIN nba.dim_players dp ON (((pv2.player_id)::text = (dp.player_id)::text)))
+     JOIN nba.dim_seasons ds ON ((pv2.season_id = ds.season_id)));
+
+
+ALTER VIEW nba.v_award_best_player OWNER TO postgres;
+
+--
+-- TOC entry 251 (class 1259 OID 17362)
+-- Name: v_award_best_playmaker; Type: VIEW; Schema: nba; Owner: postgres
+--
+
+CREATE VIEW nba.v_award_best_playmaker AS
+ WITH base AS (
+         SELECT c.player_id,
+            c.season_id,
+            c.team_id,
+            c.games_played,
+            c.playmaking_score,
+            p.pct_ast_pct,
+            p.pct_ast100,
+            p.pct_ortg
+           FROM (nba.v_composite_scores c
+             JOIN nba.v_percentiles_player p ON ((((c.player_id)::text = (p.player_id)::text) AND (c.season_id = p.season_id) AND (c.team_id = p.team_id))))
+        )
+ SELECT base.player_id,
+    base.season_id,
+    base.team_id,
+    dp.player_name,
+    ds.season,
+    base.games_played,
+    round(((((0.45 * base.playmaking_score) + (0.30 * base.pct_ast_pct)) + (0.15 * base.pct_ast100)) + (0.10 * base.pct_ortg)), 2) AS award_score,
+    rank() OVER (PARTITION BY base.season_id ORDER BY (round(((((0.45 * base.playmaking_score) + (0.30 * base.pct_ast_pct)) + (0.15 * base.pct_ast100)) + (0.10 * base.pct_ortg)), 2)) DESC) AS award_rank,
+    'Best Playmaker'::text AS award_name
+   FROM ((base
+     JOIN nba.dim_players dp ON (((base.player_id)::text = (dp.player_id)::text)))
+     JOIN nba.dim_seasons ds ON ((base.season_id = ds.season_id)));
+
+
+ALTER VIEW nba.v_award_best_playmaker OWNER TO postgres;
+
+--
+-- TOC entry 252 (class 1259 OID 17367)
+-- Name: v_award_best_scorer; Type: VIEW; Schema: nba; Owner: postgres
+--
+
+CREATE VIEW nba.v_award_best_scorer AS
+ WITH base AS (
+         SELECT c.player_id,
+            c.season_id,
+            c.team_id,
+            c.games_played,
+            c.scoring_efficiency_score,
+            c.pct_pts_created,
+            c.pct_ts,
+            p.pct_usg
+           FROM (nba.v_composite_scores c
+             JOIN nba.v_percentiles_player p ON ((((c.player_id)::text = (p.player_id)::text) AND (c.season_id = p.season_id) AND (c.team_id = p.team_id))))
+        )
+ SELECT base.player_id,
+    base.season_id,
+    base.team_id,
+    dp.player_name,
+    ds.season,
+    base.games_played,
+    round(((((0.35 * base.pct_pts_created) + (0.30 * base.pct_usg)) + (0.20 * base.scoring_efficiency_score)) + (0.15 * base.pct_ts)), 2) AS award_score,
+    rank() OVER (PARTITION BY base.season_id ORDER BY (round(((((0.35 * base.pct_pts_created) + (0.30 * base.pct_usg)) + (0.20 * base.scoring_efficiency_score)) + (0.15 * base.pct_ts)), 2)) DESC) AS award_rank,
+    'Best Scorer'::text AS award_name
+   FROM ((base
+     JOIN nba.dim_players dp ON (((base.player_id)::text = (dp.player_id)::text)))
+     JOIN nba.dim_seasons ds ON ((base.season_id = ds.season_id)));
+
+
+ALTER VIEW nba.v_award_best_scorer OWNER TO postgres;
+
+--
+-- TOC entry 253 (class 1259 OID 17372)
+-- Name: v_award_dpoy; Type: VIEW; Schema: nba; Owner: postgres
+--
+
+CREATE VIEW nba.v_award_dpoy AS
+ SELECT c.player_id,
+    c.season_id,
+    c.team_id,
+    dp.player_name,
+    ds.season,
+    c.games_played,
+    round((((((0.45 * c.defensive_impact_score) + (0.15 * ts.team_defense_score)) + (0.25 * c.defensive_activity_score)) + (0.075 * c.rim_protection_score)) + (0.075 * c.perimeter_defense_score)), 2) AS award_score,
+    rank() OVER (PARTITION BY c.season_id ORDER BY (round((((((0.45 * c.defensive_impact_score) + (0.15 * ts.team_defense_score)) + (0.25 * c.defensive_activity_score)) + (0.075 * c.rim_protection_score)) + (0.075 * c.perimeter_defense_score)), 2)) DESC) AS award_rank,
+    'DPOY'::text AS award_name
+   FROM ((((nba.v_composite_scores c
+     JOIN nba.v_team_scores ts ON (((c.team_id = ts.team_id) AND (c.season_id = ts.season_id))))
+     JOIN nba.v_percentiles_player p ON ((((c.player_id)::text = (p.player_id)::text) AND (c.season_id = p.season_id) AND (c.team_id = p.team_id))))
+     JOIN nba.dim_players dp ON (((c.player_id)::text = (dp.player_id)::text)))
+     JOIN nba.dim_seasons ds ON ((c.season_id = ds.season_id)))
+  WHERE ((((p.minutes_played)::numeric / (NULLIF(p.games_played, 0))::numeric) >= (25)::numeric) AND (c.games_played >= 50) AND (((ds.season)::text < '2023-24'::text) OR (c.games_played >= 65)));
+
+
+ALTER VIEW nba.v_award_dpoy OWNER TO postgres;
+
+--
+-- TOC entry 254 (class 1259 OID 17377)
+-- Name: v_award_most_efficient_team; Type: VIEW; Schema: nba; Owner: postgres
+--
+
+CREATE VIEW nba.v_award_most_efficient_team AS
+ SELECT pt.team_id,
+    pt.season_id,
+    dt.team_name,
+    s.season,
+    round(((((0.45 * pt.pct_ts) + (0.30 * pt.pct_efg)) + (0.15 * pt.pct_tov_inv)) + (0.10 * pt.pct_ftr)), 2) AS award_score,
+    rank() OVER (PARTITION BY pt.season_id ORDER BY ((((0.45 * pt.pct_ts) + (0.30 * pt.pct_efg)) + (0.15 * pt.pct_tov_inv)) + (0.10 * pt.pct_ftr)) DESC) AS award_rank
+   FROM ((nba.v_percentiles_team pt
+     JOIN nba.dim_teams dt ON ((pt.team_id = dt.team_id)))
+     JOIN nba.dim_seasons s ON ((pt.season_id = s.season_id)));
+
+
+ALTER VIEW nba.v_award_most_efficient_team OWNER TO postgres;
+
+--
+-- TOC entry 255 (class 1259 OID 17382)
+-- Name: v_award_mvp; Type: VIEW; Schema: nba; Owner: postgres
+--
+
+CREATE VIEW nba.v_award_mvp AS
+ WITH pv AS (
+         SELECT c.player_id,
+            c.season_id,
+            c.team_id,
+            c.games_played,
+            c.scoring_efficiency_score,
+            c.pct_pts_created,
+            round(((((count(*) OVER (PARTITION BY c.season_id) - rank() OVER (PARTITION BY c.season_id ORDER BY c.offensive_impact_score DESC)))::numeric / (NULLIF((count(*) OVER (PARTITION BY c.season_id) - 1), 0))::numeric) * (100)::numeric), 2) AS off_impact_pct,
+            round(((((count(*) OVER (PARTITION BY c.season_id) - rank() OVER (PARTITION BY c.season_id ORDER BY c.defensive_impact_score DESC)))::numeric / (NULLIF((count(*) OVER (PARTITION BY c.season_id) - 1), 0))::numeric) * (100)::numeric), 2) AS def_impact_pct,
+            c.pct_vorp,
+            c.pct_bpm,
+            p.pct_usg
+           FROM (nba.v_composite_scores c
+             JOIN nba.v_percentiles_player p ON ((((c.player_id)::text = (p.player_id)::text) AND (c.season_id = p.season_id) AND (c.team_id = p.team_id))))
+        ), pv2 AS (
+         SELECT pv.player_id,
+            pv.season_id,
+            pv.team_id,
+            pv.games_played,
+            pv.scoring_efficiency_score,
+            pv.pct_pts_created,
+            pv.off_impact_pct,
+            pv.def_impact_pct,
+            pv.pct_vorp,
+            pv.pct_bpm,
+            pv.pct_usg,
+            round(((((0.30 * pv.off_impact_pct) + (0.25 * pv.def_impact_pct)) + (0.25 * pv.pct_vorp)) + (0.20 * pv.pct_bpm)), 2) AS player_value_score
+           FROM pv
+        ), scored AS (
+         SELECT pv2.player_id,
+            pv2.season_id,
+            pv2.team_id,
+            pv2.games_played,
+            ts.team_success_score,
+            round((((((((0.25 * pv2.player_value_score) + (0.15 * pv2.off_impact_pct)) + (0.15 * pv2.pct_usg)) + (0.15 * ts.team_success_score)) + (0.15 * pv2.scoring_efficiency_score)) + (0.10 * pv2.def_impact_pct)) + (0.05 * pv2.pct_pts_created)), 2) AS award_score
+           FROM (pv2
+             JOIN nba.v_team_success ts ON (((pv2.team_id = ts.team_id) AND (pv2.season_id = ts.season_id))))
+        )
+ SELECT s.player_id,
+    s.season_id,
+    s.team_id,
+    dp.player_name,
+    ds.season,
+    s.games_played,
+    s.award_score,
+    rank() OVER (PARTITION BY s.season_id ORDER BY s.award_score DESC) AS award_rank,
+    'MVP'::text AS award_name
+   FROM ((scored s
+     JOIN nba.dim_players dp ON (((s.player_id)::text = (dp.player_id)::text)))
+     JOIN nba.dim_seasons ds ON ((s.season_id = ds.season_id)));
+
+
+ALTER VIEW nba.v_award_mvp OWNER TO postgres;
+
+--
+-- TOC entry 256 (class 1259 OID 17387)
+-- Name: v_award_opoy; Type: VIEW; Schema: nba; Owner: postgres
+--
+
+CREATE VIEW nba.v_award_opoy AS
+ WITH off_pct AS (
+         SELECT c.player_id,
+            c.season_id,
+            c.team_id,
+            c.games_played,
+            c.scoring_efficiency_score,
+            c.playmaking_score,
+            c.pct_pts_created,
+            round(((((count(*) OVER (PARTITION BY c.season_id) - rank() OVER (PARTITION BY c.season_id ORDER BY c.offensive_impact_score DESC)))::numeric / (NULLIF((count(*) OVER (PARTITION BY c.season_id) - 1), 0))::numeric) * (100)::numeric), 2) AS off_impact_pct
+           FROM nba.v_composite_scores c
+        )
+ SELECT off_pct.player_id,
+    off_pct.season_id,
+    off_pct.team_id,
+    dp.player_name,
+    ds.season,
+    off_pct.games_played,
+    round(((((0.40 * off_pct.off_impact_pct) + (0.25 * off_pct.scoring_efficiency_score)) + (0.20 * off_pct.playmaking_score)) + (0.15 * off_pct.pct_pts_created)), 2) AS award_score,
+    rank() OVER (PARTITION BY off_pct.season_id ORDER BY (round(((((0.40 * off_pct.off_impact_pct) + (0.25 * off_pct.scoring_efficiency_score)) + (0.20 * off_pct.playmaking_score)) + (0.15 * off_pct.pct_pts_created)), 2)) DESC) AS award_rank,
+    'OPOY'::text AS award_name
+   FROM ((off_pct
+     JOIN nba.dim_players dp ON (((off_pct.player_id)::text = (dp.player_id)::text)))
+     JOIN nba.dim_seasons ds ON ((off_pct.season_id = ds.season_id)));
+
+
+ALTER VIEW nba.v_award_opoy OWNER TO postgres;
+
+--
+-- TOC entry 257 (class 1259 OID 17392)
+-- Name: v_player_display_stats; Type: VIEW; Schema: nba; Owner: postgres
+--
+
+CREATE VIEW nba.v_player_display_stats AS
+ SELECT pg.player_id,
+    pg.season_id,
+    pg.team_id,
+    round(pg.points, 1) AS ppg,
+    round(pg.assists, 1) AS apg,
+    round(pg.total_rebounds, 1) AS rpg,
+    round(((t.steals)::numeric / (NULLIF(t.games_played, 0))::numeric), 1) AS spg,
+    round(((t.blocks)::numeric / (NULLIF(t.games_played, 0))::numeric), 1) AS bpg,
+    round((((t.steals + t.blocks))::numeric / (NULLIF(t.games_played, 0))::numeric), 1) AS stocks_pg,
+    sh.fg_percentage AS fg_pct,
+    sh.fg_percentage_from_3p AS three_p_pct,
+    round(((t.free_throws)::numeric / (NULLIF(t.free_throw_attempts, 0))::numeric), 3) AS ft_pct,
+    t.games_played,
+    t.games_started,
+    t.minutes_played,
+    c.offensive_impact_score,
+    c.defensive_impact_score,
+    a.box_plus_minus AS raw_bpm
+   FROM ((((nba.fact_player_season_pergame pg
+     JOIN nba.fact_player_season_totals t ON ((((pg.player_id)::text = (t.player_id)::text) AND (pg.season_id = t.season_id) AND (pg.team_id = t.team_id))))
+     JOIN nba.fact_player_season_shooting sh ON ((((pg.player_id)::text = (sh.player_id)::text) AND (pg.season_id = sh.season_id) AND (pg.team_id = sh.team_id))))
+     JOIN nba.v_composite_scores c ON ((((pg.player_id)::text = (c.player_id)::text) AND (pg.season_id = c.season_id) AND (pg.team_id = c.team_id))))
+     JOIN nba.fact_player_season_advanced a ON ((((pg.player_id)::text = (a.player_id)::text) AND (pg.season_id = a.season_id) AND (pg.team_id = a.team_id))));
+
+
+ALTER VIEW nba.v_player_display_stats OWNER TO postgres;
+
+--
+-- TOC entry 258 (class 1259 OID 17397)
+-- Name: v_player_top3_awards; Type: VIEW; Schema: nba; Owner: postgres
+--
+
+CREATE VIEW nba.v_player_top3_awards AS
+ SELECT v_award_mvp.player_id,
+    v_award_mvp.season_id,
+    v_award_mvp.team_id,
+    v_award_mvp.player_name,
+    v_award_mvp.season,
+    v_award_mvp.award_name,
+    v_award_mvp.award_score,
+    v_award_mvp.award_rank
+   FROM nba.v_award_mvp
+  WHERE (v_award_mvp.award_rank <= 3)
+UNION ALL
+ SELECT v_award_best_player.player_id,
+    v_award_best_player.season_id,
+    v_award_best_player.team_id,
+    v_award_best_player.player_name,
+    v_award_best_player.season,
+    v_award_best_player.award_name,
+    v_award_best_player.award_score,
+    v_award_best_player.award_rank
+   FROM nba.v_award_best_player
+  WHERE (v_award_best_player.award_rank <= 3)
+UNION ALL
+ SELECT v_award_best_scorer.player_id,
+    v_award_best_scorer.season_id,
+    v_award_best_scorer.team_id,
+    v_award_best_scorer.player_name,
+    v_award_best_scorer.season,
+    v_award_best_scorer.award_name,
+    v_award_best_scorer.award_score,
+    v_award_best_scorer.award_rank
+   FROM nba.v_award_best_scorer
+  WHERE (v_award_best_scorer.award_rank <= 3)
+UNION ALL
+ SELECT v_award_best_playmaker.player_id,
+    v_award_best_playmaker.season_id,
+    v_award_best_playmaker.team_id,
+    v_award_best_playmaker.player_name,
+    v_award_best_playmaker.season,
+    v_award_best_playmaker.award_name,
+    v_award_best_playmaker.award_score,
+    v_award_best_playmaker.award_rank
+   FROM nba.v_award_best_playmaker
+  WHERE (v_award_best_playmaker.award_rank <= 3)
+UNION ALL
+ SELECT v_award_opoy.player_id,
+    v_award_opoy.season_id,
+    v_award_opoy.team_id,
+    v_award_opoy.player_name,
+    v_award_opoy.season,
+    v_award_opoy.award_name,
+    v_award_opoy.award_score,
+    v_award_opoy.award_rank
+   FROM nba.v_award_opoy
+  WHERE (v_award_opoy.award_rank <= 3)
+UNION ALL
+ SELECT v_award_dpoy.player_id,
+    v_award_dpoy.season_id,
+    v_award_dpoy.team_id,
+    v_award_dpoy.player_name,
+    v_award_dpoy.season,
+    v_award_dpoy.award_name,
+    v_award_dpoy.award_score,
+    v_award_dpoy.award_rank
+   FROM nba.v_award_dpoy
+  WHERE (v_award_dpoy.award_rank <= 3);
+
+
+ALTER VIEW nba.v_player_top3_awards OWNER TO postgres;
+
+--
+-- TOC entry 259 (class 1259 OID 17402)
+-- Name: v_player_value; Type: VIEW; Schema: nba; Owner: postgres
+--
+
+CREATE VIEW nba.v_player_value AS
+ WITH ranked AS (
+         SELECT c.player_id,
+            c.season_id,
+            c.team_id,
+            c.games_played,
+            c.games_started,
+            c.minutes_played,
+            c.pts_created_raw,
+            c.pct_pts_created,
+            c.ast_tov_ratio,
+            c.uae,
+            c.uae_pct,
+            c.scoring_efficiency_score,
+            c.playmaking_score,
+            c.defensive_impact_score,
+            c.defensive_activity_score,
+            c.rim_protection_score,
+            c.perimeter_defense_score,
+            c.offensive_impact_score,
+            c.pct_vorp,
+            c.pct_ws48,
+            c.pct_net,
+            c.pct_bpm,
+            c.pct_ts,
+            c.pct_dws,
+            c.pct_blk_pct,
+            round(((((count(*) OVER (PARTITION BY c.season_id) - rank() OVER (PARTITION BY c.season_id ORDER BY c.offensive_impact_score DESC)))::numeric / (NULLIF((count(*) OVER (PARTITION BY c.season_id) - 1), 0))::numeric) * (100)::numeric), 2) AS off_impact_pct,
+            round(((((count(*) OVER (PARTITION BY c.season_id) - rank() OVER (PARTITION BY c.season_id ORDER BY c.defensive_impact_score DESC)))::numeric / (NULLIF((count(*) OVER (PARTITION BY c.season_id) - 1), 0))::numeric) * (100)::numeric), 2) AS def_impact_pct
+           FROM nba.v_composite_scores c
+        )
+ SELECT player_id,
+    season_id,
+    team_id,
+    games_played,
+    games_started,
+    minutes_played,
+    pts_created_raw,
+    pct_pts_created,
+    scoring_efficiency_score,
+    playmaking_score,
+    defensive_impact_score,
+    defensive_activity_score,
+    rim_protection_score,
+    perimeter_defense_score,
+    offensive_impact_score,
+    off_impact_pct,
+    def_impact_pct,
+    uae,
+    uae_pct,
+    pct_bpm,
+    pct_ts,
+    round(((((0.30 * off_impact_pct) + (0.25 * def_impact_pct)) + (0.25 * pct_vorp)) + (0.20 * pct_bpm)), 2) AS player_value_score
+   FROM ranked;
+
+
+ALTER VIEW nba.v_player_value OWNER TO postgres;
+
+--
+-- TOC entry 260 (class 1259 OID 17407)
+-- Name: v_team_display_stats; Type: VIEW; Schema: nba; Owner: postgres
+--
+
+CREATE VIEW nba.v_team_display_stats AS
+ SELECT t.team_id,
+    t.season_id,
+    (a.wins + a.losses) AS games_played,
+    a.wins,
+    a.losses,
+    round(((t.points)::numeric / (NULLIF((a.wins + a.losses), 0))::numeric), 1) AS ppg,
+    round(((t.assists)::numeric / (NULLIF((a.wins + a.losses), 0))::numeric), 1) AS apg,
+    round(((t.total_rebounds)::numeric / (NULLIF((a.wins + a.losses), 0))::numeric), 1) AS rpg,
+    round(((t.steals)::numeric / (NULLIF((a.wins + a.losses), 0))::numeric), 1) AS spg,
+    round(((t.blocks)::numeric / (NULLIF((a.wins + a.losses), 0))::numeric), 1) AS bpg,
+    round((((t.steals + t.blocks))::numeric / (NULLIF((a.wins + a.losses), 0))::numeric), 1) AS stocks_pg,
+    round(((t.turnovers)::numeric / (NULLIF((a.wins + a.losses), 0))::numeric), 1) AS topg,
+    sh.fg_percentage AS fg_pct,
+    sh.fg_pct_3p AS three_p_pct,
+    round(((t.free_throws)::numeric / (NULLIF(t.free_throw_attempts, 0))::numeric), 3) AS ft_pct,
+    ts.team_offense_score,
+    ts.team_defense_score,
+    a.net_rating
+   FROM (((nba.fact_team_season_totals t
+     JOIN nba.fact_team_season_advanced a ON (((t.team_id = a.team_id) AND (t.season_id = a.season_id))))
+     JOIN nba.fact_team_season_shooting sh ON (((t.team_id = sh.team_id) AND (t.season_id = sh.season_id))))
+     JOIN nba.v_team_scores ts ON (((t.team_id = ts.team_id) AND (t.season_id = ts.season_id))));
+
+
+ALTER VIEW nba.v_team_display_stats OWNER TO postgres;
+
+--
+-- TOC entry 261 (class 1259 OID 17412)
+-- Name: v_team_top3_awards; Type: VIEW; Schema: nba; Owner: postgres
+--
+
+CREATE VIEW nba.v_team_top3_awards AS
+ SELECT v_award_best_offensive_team.team_id,
+    v_award_best_offensive_team.season_id,
+    v_award_best_offensive_team.team_name,
+    v_award_best_offensive_team.season,
+    'Best Offensive Team'::text AS award_name,
+    v_award_best_offensive_team.award_score,
+    v_award_best_offensive_team.award_rank
+   FROM nba.v_award_best_offensive_team
+  WHERE (v_award_best_offensive_team.award_rank <= 3)
+UNION ALL
+ SELECT v_award_best_defensive_team.team_id,
+    v_award_best_defensive_team.season_id,
+    v_award_best_defensive_team.team_name,
+    v_award_best_defensive_team.season,
+    'Best Defensive Team'::text AS award_name,
+    v_award_best_defensive_team.award_score,
+    v_award_best_defensive_team.award_rank
+   FROM nba.v_award_best_defensive_team
+  WHERE (v_award_best_defensive_team.award_rank <= 3)
+UNION ALL
+ SELECT v_award_most_efficient_team.team_id,
+    v_award_most_efficient_team.season_id,
+    v_award_most_efficient_team.team_name,
+    v_award_most_efficient_team.season,
+    'Most Efficient Team'::text AS award_name,
+    v_award_most_efficient_team.award_score,
+    v_award_most_efficient_team.award_rank
+   FROM nba.v_award_most_efficient_team
+  WHERE (v_award_most_efficient_team.award_rank <= 3)
+UNION ALL
+ SELECT v_award_best_overall_team.team_id,
+    v_award_best_overall_team.season_id,
+    v_award_best_overall_team.team_name,
+    v_award_best_overall_team.season,
+    'Best Overall Team'::text AS award_name,
+    v_award_best_overall_team.award_score,
+    v_award_best_overall_team.award_rank
+   FROM nba.v_award_best_overall_team
+  WHERE (v_award_best_overall_team.award_rank <= 3);
+
+
+ALTER VIEW nba.v_team_top3_awards OWNER TO postgres;
+
+--
+-- TOC entry 3825 (class 2604 OID 17417)
+-- Name: dim_positions position_id; Type: DEFAULT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.dim_positions ALTER COLUMN position_id SET DEFAULT nextval('nba.dim_positions_position_id_seq'::regclass);
+
+
+--
+-- TOC entry 3826 (class 2604 OID 17418)
+-- Name: dim_seasons season_id; Type: DEFAULT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.dim_seasons ALTER COLUMN season_id SET DEFAULT nextval('nba.dim_seasons_season_id_seq'::regclass);
+
+
+--
+-- TOC entry 3827 (class 2604 OID 17419)
+-- Name: dim_teams team_id; Type: DEFAULT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.dim_teams ALTER COLUMN team_id SET DEFAULT nextval('nba.dim_teams_team_id_seq'::regclass);
+
+
+--
+-- TOC entry 3829 (class 2606 OID 17421)
+-- Name: dim_players dim_players_pkey; Type: CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.dim_players
+    ADD CONSTRAINT dim_players_pkey PRIMARY KEY (player_id);
+
+
+--
+-- TOC entry 3831 (class 2606 OID 17423)
+-- Name: dim_positions dim_positions_pkey; Type: CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.dim_positions
+    ADD CONSTRAINT dim_positions_pkey PRIMARY KEY (position_id);
+
+
+--
+-- TOC entry 3833 (class 2606 OID 17425)
+-- Name: dim_seasons dim_seasons_pkey; Type: CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.dim_seasons
+    ADD CONSTRAINT dim_seasons_pkey PRIMARY KEY (season_id);
+
+
+--
+-- TOC entry 3835 (class 2606 OID 17427)
+-- Name: dim_seasons dim_seasons_season_key; Type: CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.dim_seasons
+    ADD CONSTRAINT dim_seasons_season_key UNIQUE (season);
+
+
+--
+-- TOC entry 3837 (class 2606 OID 17429)
+-- Name: dim_seasons dim_seasons_season_year_key; Type: CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.dim_seasons
+    ADD CONSTRAINT dim_seasons_season_year_key UNIQUE (season_year);
+
+
+--
+-- TOC entry 3839 (class 2606 OID 17431)
+-- Name: dim_teams dim_teams_pkey; Type: CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.dim_teams
+    ADD CONSTRAINT dim_teams_pkey PRIMARY KEY (team_id);
+
+
+--
+-- TOC entry 3841 (class 2606 OID 17433)
+-- Name: dim_teams dim_teams_team_abbreviation_key; Type: CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.dim_teams
+    ADD CONSTRAINT dim_teams_team_abbreviation_key UNIQUE (team_abbreviation);
+
+
+--
+-- TOC entry 3843 (class 2606 OID 17435)
+-- Name: fact_player_season_advanced fact_player_season_advanced_pkey; Type: CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_player_season_advanced
+    ADD CONSTRAINT fact_player_season_advanced_pkey PRIMARY KEY (player_id, season_id, team_id);
+
+
+--
+-- TOC entry 3845 (class 2606 OID 17437)
+-- Name: fact_player_season_per100 fact_player_season_per100_pkey; Type: CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_player_season_per100
+    ADD CONSTRAINT fact_player_season_per100_pkey PRIMARY KEY (player_id, season_id, team_id);
+
+
+--
+-- TOC entry 3847 (class 2606 OID 17439)
+-- Name: fact_player_season_pergame fact_player_season_pergame_pkey; Type: CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_player_season_pergame
+    ADD CONSTRAINT fact_player_season_pergame_pkey PRIMARY KEY (player_id, season_id, team_id);
+
+
+--
+-- TOC entry 3849 (class 2606 OID 17441)
+-- Name: fact_player_season_playbyplay fact_player_season_playbyplay_pkey; Type: CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_player_season_playbyplay
+    ADD CONSTRAINT fact_player_season_playbyplay_pkey PRIMARY KEY (player_id, season_id, team_id);
+
+
+--
+-- TOC entry 3851 (class 2606 OID 17443)
+-- Name: fact_player_season_shooting fact_player_season_shooting_pkey; Type: CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_player_season_shooting
+    ADD CONSTRAINT fact_player_season_shooting_pkey PRIMARY KEY (player_id, season_id, team_id);
+
+
+--
+-- TOC entry 3853 (class 2606 OID 17445)
+-- Name: fact_player_season_totals fact_player_season_totals_pkey; Type: CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_player_season_totals
+    ADD CONSTRAINT fact_player_season_totals_pkey PRIMARY KEY (player_id, season_id, team_id);
+
+
+--
+-- TOC entry 3855 (class 2606 OID 17447)
+-- Name: fact_team_season_advanced fact_team_season_advanced_pkey; Type: CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_team_season_advanced
+    ADD CONSTRAINT fact_team_season_advanced_pkey PRIMARY KEY (team_id, season_id);
+
+
+--
+-- TOC entry 3857 (class 2606 OID 17449)
+-- Name: fact_team_season_opponent_per100 fact_team_season_opponent_per100_pkey; Type: CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_team_season_opponent_per100
+    ADD CONSTRAINT fact_team_season_opponent_per100_pkey PRIMARY KEY (team_id, season_id);
+
+
+--
+-- TOC entry 3859 (class 2606 OID 17451)
+-- Name: fact_team_season_opponent_shooting fact_team_season_opponent_shooting_pkey; Type: CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_team_season_opponent_shooting
+    ADD CONSTRAINT fact_team_season_opponent_shooting_pkey PRIMARY KEY (team_id, season_id);
+
+
+--
+-- TOC entry 3861 (class 2606 OID 17453)
+-- Name: fact_team_season_opponent_totals fact_team_season_opponent_totals_pkey; Type: CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_team_season_opponent_totals
+    ADD CONSTRAINT fact_team_season_opponent_totals_pkey PRIMARY KEY (team_id, season_id);
+
+
+--
+-- TOC entry 3863 (class 2606 OID 17455)
+-- Name: fact_team_season_per100 fact_team_season_per100_pkey; Type: CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_team_season_per100
+    ADD CONSTRAINT fact_team_season_per100_pkey PRIMARY KEY (team_id, season_id);
+
+
+--
+-- TOC entry 3865 (class 2606 OID 17457)
+-- Name: fact_team_season_shooting fact_team_season_shooting_pkey; Type: CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_team_season_shooting
+    ADD CONSTRAINT fact_team_season_shooting_pkey PRIMARY KEY (team_id, season_id);
+
+
+--
+-- TOC entry 3867 (class 2606 OID 17459)
+-- Name: fact_team_season_totals fact_team_season_totals_pkey; Type: CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_team_season_totals
+    ADD CONSTRAINT fact_team_season_totals_pkey PRIMARY KEY (team_id, season_id);
+
+
+--
+-- TOC entry 3869 (class 2606 OID 17461)
+-- Name: ref_rookie_eligibility ref_rookie_eligibility_pkey; Type: CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.ref_rookie_eligibility
+    ADD CONSTRAINT ref_rookie_eligibility_pkey PRIMARY KEY (player_id, season_id);
+
+
+--
+-- TOC entry 3870 (class 2606 OID 17462)
+-- Name: fact_player_season_advanced fact_player_season_advanced_player_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_player_season_advanced
+    ADD CONSTRAINT fact_player_season_advanced_player_id_fkey FOREIGN KEY (player_id) REFERENCES nba.dim_players(player_id);
+
+
+--
+-- TOC entry 3871 (class 2606 OID 17467)
+-- Name: fact_player_season_advanced fact_player_season_advanced_season_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_player_season_advanced
+    ADD CONSTRAINT fact_player_season_advanced_season_id_fkey FOREIGN KEY (season_id) REFERENCES nba.dim_seasons(season_id);
+
+
+--
+-- TOC entry 3872 (class 2606 OID 17472)
+-- Name: fact_player_season_advanced fact_player_season_advanced_team_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_player_season_advanced
+    ADD CONSTRAINT fact_player_season_advanced_team_id_fkey FOREIGN KEY (team_id) REFERENCES nba.dim_teams(team_id);
+
+
+--
+-- TOC entry 3873 (class 2606 OID 17477)
+-- Name: fact_player_season_per100 fact_player_season_per100_player_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_player_season_per100
+    ADD CONSTRAINT fact_player_season_per100_player_id_fkey FOREIGN KEY (player_id) REFERENCES nba.dim_players(player_id);
+
+
+--
+-- TOC entry 3874 (class 2606 OID 17482)
+-- Name: fact_player_season_per100 fact_player_season_per100_season_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_player_season_per100
+    ADD CONSTRAINT fact_player_season_per100_season_id_fkey FOREIGN KEY (season_id) REFERENCES nba.dim_seasons(season_id);
+
+
+--
+-- TOC entry 3875 (class 2606 OID 17487)
+-- Name: fact_player_season_per100 fact_player_season_per100_team_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_player_season_per100
+    ADD CONSTRAINT fact_player_season_per100_team_id_fkey FOREIGN KEY (team_id) REFERENCES nba.dim_teams(team_id);
+
+
+--
+-- TOC entry 3876 (class 2606 OID 17492)
+-- Name: fact_player_season_pergame fact_player_season_pergame_player_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_player_season_pergame
+    ADD CONSTRAINT fact_player_season_pergame_player_id_fkey FOREIGN KEY (player_id) REFERENCES nba.dim_players(player_id);
+
+
+--
+-- TOC entry 3877 (class 2606 OID 17497)
+-- Name: fact_player_season_pergame fact_player_season_pergame_season_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_player_season_pergame
+    ADD CONSTRAINT fact_player_season_pergame_season_id_fkey FOREIGN KEY (season_id) REFERENCES nba.dim_seasons(season_id);
+
+
+--
+-- TOC entry 3878 (class 2606 OID 17502)
+-- Name: fact_player_season_pergame fact_player_season_pergame_team_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_player_season_pergame
+    ADD CONSTRAINT fact_player_season_pergame_team_id_fkey FOREIGN KEY (team_id) REFERENCES nba.dim_teams(team_id);
+
+
+--
+-- TOC entry 3879 (class 2606 OID 17507)
+-- Name: fact_player_season_playbyplay fact_player_season_playbyplay_player_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_player_season_playbyplay
+    ADD CONSTRAINT fact_player_season_playbyplay_player_id_fkey FOREIGN KEY (player_id) REFERENCES nba.dim_players(player_id);
+
+
+--
+-- TOC entry 3880 (class 2606 OID 17512)
+-- Name: fact_player_season_playbyplay fact_player_season_playbyplay_season_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_player_season_playbyplay
+    ADD CONSTRAINT fact_player_season_playbyplay_season_id_fkey FOREIGN KEY (season_id) REFERENCES nba.dim_seasons(season_id);
+
+
+--
+-- TOC entry 3881 (class 2606 OID 17517)
+-- Name: fact_player_season_playbyplay fact_player_season_playbyplay_team_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_player_season_playbyplay
+    ADD CONSTRAINT fact_player_season_playbyplay_team_id_fkey FOREIGN KEY (team_id) REFERENCES nba.dim_teams(team_id);
+
+
+--
+-- TOC entry 3882 (class 2606 OID 17522)
+-- Name: fact_player_season_shooting fact_player_season_shooting_player_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_player_season_shooting
+    ADD CONSTRAINT fact_player_season_shooting_player_id_fkey FOREIGN KEY (player_id) REFERENCES nba.dim_players(player_id);
+
+
+--
+-- TOC entry 3883 (class 2606 OID 17527)
+-- Name: fact_player_season_shooting fact_player_season_shooting_season_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_player_season_shooting
+    ADD CONSTRAINT fact_player_season_shooting_season_id_fkey FOREIGN KEY (season_id) REFERENCES nba.dim_seasons(season_id);
+
+
+--
+-- TOC entry 3884 (class 2606 OID 17532)
+-- Name: fact_player_season_shooting fact_player_season_shooting_team_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_player_season_shooting
+    ADD CONSTRAINT fact_player_season_shooting_team_id_fkey FOREIGN KEY (team_id) REFERENCES nba.dim_teams(team_id);
+
+
+--
+-- TOC entry 3885 (class 2606 OID 17537)
+-- Name: fact_player_season_totals fact_player_season_totals_player_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_player_season_totals
+    ADD CONSTRAINT fact_player_season_totals_player_id_fkey FOREIGN KEY (player_id) REFERENCES nba.dim_players(player_id);
+
+
+--
+-- TOC entry 3886 (class 2606 OID 17542)
+-- Name: fact_player_season_totals fact_player_season_totals_season_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_player_season_totals
+    ADD CONSTRAINT fact_player_season_totals_season_id_fkey FOREIGN KEY (season_id) REFERENCES nba.dim_seasons(season_id);
+
+
+--
+-- TOC entry 3887 (class 2606 OID 17547)
+-- Name: fact_player_season_totals fact_player_season_totals_team_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_player_season_totals
+    ADD CONSTRAINT fact_player_season_totals_team_id_fkey FOREIGN KEY (team_id) REFERENCES nba.dim_teams(team_id);
+
+
+--
+-- TOC entry 3888 (class 2606 OID 17552)
+-- Name: fact_team_season_advanced fact_team_season_advanced_season_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_team_season_advanced
+    ADD CONSTRAINT fact_team_season_advanced_season_id_fkey FOREIGN KEY (season_id) REFERENCES nba.dim_seasons(season_id);
+
+
+--
+-- TOC entry 3889 (class 2606 OID 17557)
+-- Name: fact_team_season_advanced fact_team_season_advanced_team_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_team_season_advanced
+    ADD CONSTRAINT fact_team_season_advanced_team_id_fkey FOREIGN KEY (team_id) REFERENCES nba.dim_teams(team_id);
+
+
+--
+-- TOC entry 3890 (class 2606 OID 17562)
+-- Name: fact_team_season_opponent_per100 fact_team_season_opponent_per100_season_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_team_season_opponent_per100
+    ADD CONSTRAINT fact_team_season_opponent_per100_season_id_fkey FOREIGN KEY (season_id) REFERENCES nba.dim_seasons(season_id);
+
+
+--
+-- TOC entry 3891 (class 2606 OID 17567)
+-- Name: fact_team_season_opponent_per100 fact_team_season_opponent_per100_team_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_team_season_opponent_per100
+    ADD CONSTRAINT fact_team_season_opponent_per100_team_id_fkey FOREIGN KEY (team_id) REFERENCES nba.dim_teams(team_id);
+
+
+--
+-- TOC entry 3892 (class 2606 OID 17572)
+-- Name: fact_team_season_opponent_shooting fact_team_season_opponent_shooting_season_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_team_season_opponent_shooting
+    ADD CONSTRAINT fact_team_season_opponent_shooting_season_id_fkey FOREIGN KEY (season_id) REFERENCES nba.dim_seasons(season_id);
+
+
+--
+-- TOC entry 3893 (class 2606 OID 17577)
+-- Name: fact_team_season_opponent_shooting fact_team_season_opponent_shooting_team_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_team_season_opponent_shooting
+    ADD CONSTRAINT fact_team_season_opponent_shooting_team_id_fkey FOREIGN KEY (team_id) REFERENCES nba.dim_teams(team_id);
+
+
+--
+-- TOC entry 3894 (class 2606 OID 17582)
+-- Name: fact_team_season_opponent_totals fact_team_season_opponent_totals_season_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_team_season_opponent_totals
+    ADD CONSTRAINT fact_team_season_opponent_totals_season_id_fkey FOREIGN KEY (season_id) REFERENCES nba.dim_seasons(season_id);
+
+
+--
+-- TOC entry 3895 (class 2606 OID 17587)
+-- Name: fact_team_season_opponent_totals fact_team_season_opponent_totals_team_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_team_season_opponent_totals
+    ADD CONSTRAINT fact_team_season_opponent_totals_team_id_fkey FOREIGN KEY (team_id) REFERENCES nba.dim_teams(team_id);
+
+
+--
+-- TOC entry 3896 (class 2606 OID 17592)
+-- Name: fact_team_season_per100 fact_team_season_per100_season_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_team_season_per100
+    ADD CONSTRAINT fact_team_season_per100_season_id_fkey FOREIGN KEY (season_id) REFERENCES nba.dim_seasons(season_id);
+
+
+--
+-- TOC entry 3897 (class 2606 OID 17597)
+-- Name: fact_team_season_per100 fact_team_season_per100_team_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_team_season_per100
+    ADD CONSTRAINT fact_team_season_per100_team_id_fkey FOREIGN KEY (team_id) REFERENCES nba.dim_teams(team_id);
+
+
+--
+-- TOC entry 3898 (class 2606 OID 17602)
+-- Name: fact_team_season_shooting fact_team_season_shooting_season_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_team_season_shooting
+    ADD CONSTRAINT fact_team_season_shooting_season_id_fkey FOREIGN KEY (season_id) REFERENCES nba.dim_seasons(season_id);
+
+
+--
+-- TOC entry 3899 (class 2606 OID 17607)
+-- Name: fact_team_season_shooting fact_team_season_shooting_team_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_team_season_shooting
+    ADD CONSTRAINT fact_team_season_shooting_team_id_fkey FOREIGN KEY (team_id) REFERENCES nba.dim_teams(team_id);
+
+
+--
+-- TOC entry 3900 (class 2606 OID 17612)
+-- Name: fact_team_season_totals fact_team_season_totals_season_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_team_season_totals
+    ADD CONSTRAINT fact_team_season_totals_season_id_fkey FOREIGN KEY (season_id) REFERENCES nba.dim_seasons(season_id);
+
+
+--
+-- TOC entry 3901 (class 2606 OID 17617)
+-- Name: fact_team_season_totals fact_team_season_totals_team_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.fact_team_season_totals
+    ADD CONSTRAINT fact_team_season_totals_team_id_fkey FOREIGN KEY (team_id) REFERENCES nba.dim_teams(team_id);
+
+
+--
+-- TOC entry 3902 (class 2606 OID 17622)
+-- Name: ref_rookie_eligibility ref_rookie_eligibility_player_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.ref_rookie_eligibility
+    ADD CONSTRAINT ref_rookie_eligibility_player_id_fkey FOREIGN KEY (player_id) REFERENCES nba.dim_players(player_id);
+
+
+--
+-- TOC entry 3903 (class 2606 OID 17627)
+-- Name: ref_rookie_eligibility ref_rookie_eligibility_season_id_fkey; Type: FK CONSTRAINT; Schema: nba; Owner: postgres
+--
+
+ALTER TABLE ONLY nba.ref_rookie_eligibility
+    ADD CONSTRAINT ref_rookie_eligibility_season_id_fkey FOREIGN KEY (season_id) REFERENCES nba.dim_seasons(season_id);
+
+
+-- Completed on 2026-06-23 17:36:59 EDT
+
+--
+-- PostgreSQL database dump complete
+--
+
+\unrestrict 23h1ittbEWqLbKu3pBwSBHrAWDclmCPvoG1QIMT3blnBp8y8JYyEo9jpdaJoZpa
+
