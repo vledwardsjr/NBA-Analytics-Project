@@ -22,8 +22,8 @@ indefensible results.
 | `NBA_DATA_PROJECT_DASHBOARDS.pbix` | All seven Power BI dashboards |
 | `NBA_Data_Project_Methodology-Report.Rmd` / `NBA_Data_Project_Methodology-Report.pdf` | The full methodology and decision report |
 | `nba_analytics_deck.pptx` / `nba_analytics_deck.pdf` | A short stage-by-stage walkthrough deck |
-| `Final_Award_Set.docx` / `.pdf` | The final award list, award teams, and cut-award reasoning |
-| `Formula_Reference_Final.docx` / `.pdf` | Every formula used in the project, in full |
+| `Final_Award_Set.pdf` | The final award list, award teams, and cut-award reasoning |
+| `Formula_Reference_Final.pdf` | Every formula used in the project, in full |
 | `player_season.png`, `team_season.png`, `season_awards.png`, `player_comparison.png`, `team_comparison.png`, `player_progression.png`, `team_progression.png` | Dashboard screenshots, referenced below |
 
 ---
