@@ -1,0 +1,242 @@
+---
+title: "NBA Analytics — Methodology & Decision Report"
+subtitle: "A Custom Percentile-Based Award Framework, 2019-20 to 2024-25"
+author: "VJ"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+library(knitr)
+```
+
+# Introduction
+
+This document explains the design and reasoning behind a custom NBA player and team award framework, covering six full seasons (2019-20 through 2024-25). The project's goal is to build a complete, end-to-end analytics pipeline — from raw historical box-score and advanced-stat data, through database engineering in PostgreSQL, through a custom percentile-based scoring engine, to visualization in Power BI — and to use that pipeline to answer one specific question: who actually deserved each NBA award, based purely on the numbers, independent of media narrative, name recognition, or team record, except where team record is deliberately and explicitly included as a weighted input.
+
+That question only matters if the answer is defensible. The standard applied throughout this project was simple: if a metric or award formula produced a result that couldn't be justified to someone who actually watches basketball, it was redesigned or cut entirely rather than shipped with an asterisk. Several metrics and awards described later in this report were dropped for exactly that reason.
+
+The original motivation for a percentile-based approach was to create a genuine comparison point — a calculated "deserved" winner that could be checked directly against the real, historically awarded winner for a given season. That motivation shows up directly in specific formula decisions throughout this project: MVP (Team Influence) and DPOY both carry explicit team-success weighting, because real award voting is well documented to reward players on winning teams, and a "deserved" winner formula that ignored that would be measuring something different from what real voters actually reward. The fictional awards — Best Player, Best Scorer, Best Playmaker, and the fictional team awards — deliberately exclude team context entirely, since they were designed to answer "who is the best, full stop" rather than "who would actually win the award."
+
+# Methodology
+
+## Database Architecture
+
+The underlying database follows a fact/dimension structure: dimension tables (`dim_players`, `dim_teams`, `dim_seasons`) hold stable identifying attributes, while fact tables hold season-grain statistical observations — per-season totals, advanced stats, opponent shooting splits — keyed back to those dimensions. This separation matters for two reasons specific to this project. First, every percentile calculation is computed *within* a season, so `season_id` needs to function as a clean, joinable partition key rather than a string repeated across every fact row. Second, six full seasons of player-season data adds up to several thousand rows once role players are included; a normalized structure keeps that volume manageable and avoids duplicating player and team identifying data on every row.
+
+## Percentile-Based Scoring
+
+Every raw input metric (TS%, AST%, DBPM, etc.) is converted to a percentile rank before it is used in any composite score:
+
+$$\text{Percentile} = \frac{\text{Total Players} - 1}{\text{Rank} - 1} \times 100$$
+
+For metrics where a lower raw value is better (TOV%, DRtg, Opponent FG%), the percentile is inverted: $100 - \text{Percentile}$.
+
+Percentiles were chosen over raw z-scores or raw stat values for two reasons. First, they put wildly different statistical scales — assist percentage, defensive box plus-minus, opponent field goal percentage — onto a common 0-100 scale, which is what makes weighted addition across categories meaningful in the first place. Second, percentiles are computed *within* each season, so a player is measured against their actual contemporaries rather than against a fixed historical baseline that drifts as the league's pace and shooting profile change year to year.
+
+This solves a specific problem created by a six-season dataset that spans real rule and style changes: pace, three-point attempt rate, and league-wide offensive efficiency all shifted measurably between 2019-20 and 2024-25. A flat cross-season cutoff — "a 30% usage rate is elite" — would silently reward or punish a player based on which season they happened to play in, rather than how they performed relative to their actual peers that year. Computing percentiles per season neutralizes that drift by construction, rather than requiring a separate era-adjustment correction layered on top.
+
+## Weighted Addition, Not Multiplication
+
+All composite scores (Offensive Impact, Defensive Impact, Player Value, and every award formula built on top of them) use weighted addition, with weights summing to 1.0, rather than multiplication across terms.
+
+This is exactly the failure mode the original Player Value Score formula hit during early development. Built as a multiplicative composite across five terms, it produced near-zero outputs for almost every player — including players who were clearly excellent by every individual metric that fed into it. The math explains why: a player scoring in the 90th percentile on four of five inputs but only the 10th percentile on the fifth would still score a reasonable \~74 under weighted addition at even weights ($0.9 \times 4 \times 0.2 \times 100 +
+0.1 \times 0.2 \times 100$), but drops to roughly 7% under multiplication ($0.9^4 \times 0.1$), since one low term drags the entire product down regardless of how strong the other four are. That collapse over-punishes specialists — a lockdown defender with merely average offensive stats, for example — and compresses every player's score toward zero, where real separation disappears. Player Value Score was rebuilt as weighted addition, anchored by VORP and WS/48, and immediately produced sensible, separated results.
+
+## Minutes and Games Floors
+
+Rate-based stats — shooting percentages, per-100 figures, advanced box-score metrics — are highly unstable in small samples. A player who shoots 6-for-8 in limited minutes can post a True Shooting percentage that looks elite, despite the sample being far too small to mean anything. No percentile or weighting scheme fully corrects for this on its own, so the project applies a hard floor instead: 1,000 minutes played in a standard season, or 600 minutes in a season shortened by external circumstances. Players below the floor are excluded from award eligibility and from the composite-score tables in this report, regardless of how strong their rate stats look in isolation.
+
+## Eligibility Rules
+
+A 65-game minimum applies to award eligibility from the 2023-24 season onward, mirroring the real NBA's award eligibility rule, introduced that same season specifically in response to concerns about load management and stars sitting out games while remaining in award contention. Applying the same threshold here keeps this project's eligibility logic grounded in an actual, documented league policy rather than an arbitrary cutoff chosen after the fact.
+
+## Tooling Philosophy
+
+Every composite score and award formula in this project is calculated in SQL, inside PostgreSQL views, rather than in Power BI's DAX layer or in a separate scripting language. This was a deliberate choice for two reasons. First, keeping calculation logic in SQL means a formula's definition lives in exactly one place — a view — rather than being reimplemented, and potentially drifting, across multiple Power BI measures. Second, this project is explicitly intended to demonstrate and strengthen SQL and database-engineering skill; offloading composite-score logic to DAX or Python would have hidden the most analytically substantial work in a different layer of the stack. DAX is used in Power BI only where it has no real substitute — slicer-driven selections, cross-filtering behavior — never for calculation logic that SQL can express directly.
+
+## Build Order
+
+Scores are built in dependency layers rather than all at once: foundation scores (computed directly from percentiled raw stats, e.g., Scoring Efficiency, Playmaking, Defensive Impact) are calculated first since they have no dependencies. Second-level scores (Offensive Impact Score, Player Value Score) are built on top of the foundation layer. Team scores are computed independently from team-level data. Award formulas are calculated last, combining whichever player and team scores each formula requires. Building layer by layer made it possible to trace any downstream anomaly back to the specific layer that produced it, rather than debugging an entire award score at once.
+
+\newpage
+
+# Composite Scores
+
+Before any award formula is calculated, every player and team is scored on a set of underlying composite metrics. These are the building blocks — award formulas are just different weighted combinations of the scores below, plus a few volume inputs like Points Created.
+
+**Player-level scores:**
+
+- **Offensive Impact Score** — a player's overall offensive production and shot creation (OBPM, ORtg, OWS, Usage-Adjusted Efficiency, Points Created), independent of role.
+- **Defensive Impact Score** — a player's defensive box-score and rate-stat contribution (DBPM, DWS, STL%, BLK%).
+- **Scoring Efficiency Score** — how efficiently a player scores relative to volume and shot profile (TS%, FT Rate, PPSA, 3PA Rate) — separates "scores a lot" from "scores efficiently."
+- **Playmaking Score** — ball-handling and table-setting ability (AST%, AST/TOV, AST/100, ORtg context), independent of usage or ball-dominance.
+- **Player Value Score** — the project's all-in-one composite: Offensive Impact, Defensive Impact, VORP, WS/48, and Net Rating combined into a single bottom-line value number. The closest analog in this system to "how good is this player, overall."
+
+**Team-level scores:**
+
+- **Team Offense Score / Team Defense Score** — season-level team composites built the same way as player scores: percentile-ranked inputs, weighted addition, measuring a team's offensive or defensive quality independent of record.
+- **Team Success Score** — combines Net Rating, Win%, and the two team scores above into a single number representing genuine team success. This is the team-context input used in award formulas like MVP (Team) and DPOY.
+
+\newpage
+
+```{r composite-helpers, echo=TRUE}
+# Player-level composites: top N by Player Value Score, most recent
+# season, with the project's standard 1000-minute floor applied first
+# to avoid rewarding small-sample, low-role players.
+show_player_composites <- function(file = "player_composite_scores.csv", n = 5, min_minutes = 1000) {
+  df <- read.csv(file.path("data", file), stringsAsFactors = FALSE)
+  latest_season <- max(df$season)
+  df_latest <- df[df$season == latest_season & df$minutes_played >= min_minutes, ]
+  df_latest <- df_latest[order(-df_latest$player_value_score), ]
+  cols <- c("player_name", "offensive_impact_score", "defensive_impact_score",
+            "scoring_efficiency_score", "playmaking_score", "player_value_score")
+  df_top <- head(df_latest[, cols], n)
+  colnames(df_top) <- c("Player", "Off. Impact", "Def. Impact", "Scoring Eff.",
+                         "Playmaking", "Player Value")
+  kable(df_top, caption = paste("Player Composite Scores —", latest_season),
+        row.names = FALSE, digits = 2)
+}
+
+# Team-level composites: top N by Team Success Score, most recent season.
+show_team_composites <- function(file = "team_composite_scores.csv", n = 5) {
+  df <- read.csv(file.path("data", file), stringsAsFactors = FALSE)
+  latest_season <- max(df$season)
+  df_latest <- df[df$season == latest_season, ]
+  df_latest <- df_latest[order(-df_latest$team_success_score), ]
+  cols <- c("team_name", "team_offense_score", "team_defense_score", "team_success_score")
+  df_top <- head(df_latest[, cols], n)
+  colnames(df_top) <- c("Team", "Team Offense", "Team Defense", "Team Success")
+  kable(df_top, caption = paste("Team Composite Scores —", latest_season),
+        row.names = FALSE, digits = 2)
+}
+```
+
+\newpage
+
+
+## Player-Level Scores
+
+```{r}
+show_player_composites()
+```
+
+## Team-Level Scores
+
+```{r}
+show_team_composites()
+```
+
+\newpage
+
+# Results
+
+```{r helper-function, echo=TRUE}
+# Reusable function: reads one award's exported CSV, isolates the most
+# recent season in the data (rather than hardcoding a season string),
+# and returns the top N ranked entries as a formatted table.
+show_award_table <- function(file, award_label, name_col = "player_name", n = 5) {
+  df <- read.csv(file.path("data", file), stringsAsFactors = FALSE)
+  latest_season <- max(df$season)
+  df_latest <- df[df$season == latest_season, ]
+  df_latest <- df_latest[order(df_latest$award_rank), ]
+  df_top <- head(df_latest[, c("award_rank", name_col, "award_score")], n)
+  display_label <- if (name_col == "player_name") "Player" else "Team"
+  colnames(df_top) <- c("Rank", display_label, paste(award_label, "Score"))
+  kable(df_top, caption = paste(award_label, "—", latest_season), row.names = FALSE)
+}
+```
+
+```{r all-nba-helper, echo=TRUE}
+# All-NBA is three separate 5-player teams, not one flat top-N list,
+# so it pulls a specific rank range (e.g. 1-5) instead of a flat n.
+show_all_nba_tier <- function(file, tier_label, rank_start, rank_end) {
+  df <- read.csv(file.path("data", file), stringsAsFactors = FALSE)
+  latest_season <- max(df$season)
+  df_latest <- df[df$season == latest_season, ]
+  df_latest <- df_latest[order(df_latest$award_rank), ]
+  df_tier <- df_latest[df_latest$award_rank >= rank_start & df_latest$award_rank <= rank_end,
+                        c("award_rank", "player_name", "award_score")]
+  colnames(df_tier) <- c("Rank", "Player", "All-NBA Score")
+  kable(df_tier, caption = paste("All-NBA", tier_label, "—", latest_season), row.names = FALSE)
+}
+```
+
+## MVP (Team Influence)
+
+```{r}
+show_award_table("award_mvp_with_team.csv", "MVP")
+```
+
+## DPOY
+
+```{r}
+show_award_table("award_dpoy.csv", "DPOY")
+```
+
+## OPOY
+
+```{r}
+show_award_table("award_opoy.csv", "OPOY")
+```
+
+Unlike DPOY, OPOY carries no team-context weighting in its formula. This is an intentional design choice — OPOY is scored as a pure individual-skill award, consistent with the fictional awards below, rather than mirroring DPOY's deliberate reward for players on elite defensive teams.
+
+## Best Player
+
+```{r}
+show_award_table("award_best_player.csv", "Best Player")
+```
+
+## Best Scorer
+
+```{r}
+show_award_table("award_best_scorer.csv", "Best Scorer")
+```
+
+## Best Playmaker
+
+```{r}
+show_award_table("award_best_playmaker.csv", "Best Playmaker")
+```
+
+## All-NBA
+
+```{r}
+show_all_nba_tier("award_all_nba.csv", "1st Team", 1, 5)
+```
+
+```{r}
+show_all_nba_tier("award_all_nba.csv", "2nd Team", 6, 10)
+```
+
+```{r}
+show_all_nba_tier("award_all_nba.csv", "3rd Team", 11, 15)
+```
+
+\newpage
+
+## Best Offensive Team
+
+```{r}
+show_award_table("award_best_offensive_team.csv", "Best Offensive Team", name_col = "team_name")
+```
+
+## Best Defensive Team
+
+```{r}
+show_award_table("award_best_defensive_team.csv", "Best Defensive Team", name_col = "team_name")
+```
+
+## Best Overall Team
+
+```{r}
+show_award_table("award_best_overall_team.csv", "Best Overall Team", name_col = "team_name")
+```
+
+## Most Efficient Team
+
+```{r}
+show_award_table("award_most_efficient_team.csv", "Most Efficient Team", name_col = "team_name")
+```
