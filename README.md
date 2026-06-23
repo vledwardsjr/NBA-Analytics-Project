@@ -90,10 +90,10 @@ progression views.
 
 | | |
 |---|---|
-| ![Player Season](./player_season.png) **Player Season** | ![Team Season](./team_season.png) **Team Season** |
-| ![Season Awards](./season_awards.png) **Season Awards** | ![Player Comparison](./player_comparison.png) **Player Comparison** |
-| ![Team Comparison](./team_comparison.png) **Team Comparison** | ![Player Progression](./player_progression.png) **Player Progression** |
-| ![Team Progression](./team_progression.png) **Team Progression** | |
+| ![Player Season](./Dashboard%20Screenshots/player_season.png) **Player Season** | ![Team Season](./Dashboard%20Screenshots/team_season.png) **Team Season** |
+| ![Season Awards](./Dashboard%20Screenshots/season_awards.png) **Season Awards** | ![Player Comparison](./Dashboard%20Screenshots/player_comparison.png) **Player Comparison** |
+| ![Team Comparison](./Dashboard%20Screenshots/team_comparison.png) **Team Comparison** | ![Player Progression](./Dashboard%20Screenshots/player_progression.png) **Player Progression** |
+| ![Team Progression](./Dashboard%20Screenshots/team_progression.png) **Team Progression** | |
 
 ---
 
