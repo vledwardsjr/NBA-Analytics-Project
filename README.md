@@ -42,15 +42,15 @@ Several awards that were part of the original plan — MIP, 6MOY, ROY, COY, All-
 and All-Defense Teams — were evaluated during development and ultimately cut, because they
 either couldn't produce statistically defensible results or were mathematically redundant with
 an award that was kept. Full reasoning for every cut is in
-[`Final_Award_Set.pdf`](./Final_Award_Set.pdf).
+[`Final_Award_Set.pdf`](./Project%20Template%20%28Stat%3AAward%20Info%29/Final_Award_Set.pdf).
 
 Every formula — foundation scores, composite scores, award formulas, and the percentile engine
 itself — is documented in full in
-[`Formula_Reference_Final.pdf`](./Formula_Reference_Final.pdf).
+[`Formula_Reference_Final.pdf`](./Project%20Template%20%28Stat%3AAward%20Info%29/Formula_Reference_Final.pdf).
 
 For the full reasoning behind the methodology, the data-quality issues found and fixed along the
 way, and the validation checks that confirm the calculated outputs match real basketball
-reality, see [`NBA_Data_Project_Methodology-Report.pdf`](./NBA_Data_Project_Methodology-Report.pdf).
+reality, see [`NBA_Data_Project_Methodology-Report.pdf`](./Methodology%20Reports/NBA_Data_Project_Methodology-Report.pdf).
 
 ---
 
